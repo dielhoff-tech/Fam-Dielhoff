@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Familie Dielhoff 🏠</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream:   #fdf6ec;
+      --warm1:   #f9e4c8;
+      --warm2:   #f5c897;
+      --accent:  #e07b39;
+      --accent2: #c0583a;
+      --green:   #6aaa72;
+      --text:    #3b2a1a;
+      --muted:   #8a6a4a;
+      --card:    #fffaf3;
+      --shadow:  0 4px 20px rgba(180,100,40,0.10);
+      --radius:  18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #e07b39 0%, #c0583a 100%);
+      color: #fff;
+      padding: 28px 32px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(200,80,40,0.25);
+    }
+
+    .header-left h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .header-left p {
+      font-size: 0.95rem;
+      opacity: 0.88;
+      margin-top: 2px;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+    #clock {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    #datum {
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    /* ── GRID ── */
+    main {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 20px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      gap: 24px;
+    }
+
+    /* kaart-basis */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      border: 1.5px solid var(--warm1);
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--accent2);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── WEER ── */
+    #weer-card {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .weer-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    #weer-icon { font-size: 3.5rem; line-height: 1; }
+    #weer-temp { font-size: 3rem; font-weight: 800; color: var(--accent); }
+    #weer-desc { font-size: 1rem; color: var(--muted); margin-top: 2px; }
+    #weer-locatie { font-size: 0.85rem; color: var(--muted); }
+
+    .weer-details {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+    .weer-detail {
+      text-align: center;
+    }
+    .weer-detail span:first-child {
+      font-size: 1.4rem;
+    }
+    .weer-detail p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .weer-detail strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    /* ── KALENDER ── */
+    #kalender-card {
+      grid-column: 1 / 2;
+    }
+    #kalender-card iframe {
+      width: 100%;
+      height: 420px;
+      border: none;
+      border-radius: 12px;
+    }
+
+    /* ── TAKEN ── */
+    #taken-card {
+      grid-column: 2 / 3;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .taken-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: 2px solid var(--warm2);
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .taken-lijst {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 280px;
+      margin-bottom: 14px;
+    }
+
+    .taak-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: var(--warm1);
+      margin-bottom: 8px;
+      transition: opacity 0.2s;
+    }
+    .taak-item.gedaan { opacity: 0.45; }
+    .taak-item.gedaan .taak-tekst { text-decoration: line-through; }
+
+    .taak-check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2.5px solid var(--accent);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+    .taak-check.checked { background: var(--green); border-color: var(--green); color: #fff; }
+
+    .taak-tekst { flex: 1; font-size: 0.92rem; font-weight: 600; }
+
+    .taak-del {
+      background: none; border: none; cursor: pointer;
+      font-size: 1rem; color: var(--muted);
+      opacity: 0.5; transition: opacity 0.15s;
+      padding: 2px 4px;
+    }
+    .taak-del:hover { opacity: 1; color: var(--accent2); }
+
+    .taak-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .taak-input-row input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 2px solid var(--warm2);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      background: var(--cream);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .taak-input-row input:focus { border-color: var(--accent); }
+    .taak-input-row button {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .taak-input-row button:hover { background: var(--accent2); }
+
+    /* ── ONZE SITES ── */
+    #sites-card {
+      grid-column: 1 / -1;
+    }
+    .sites-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .site-link {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 22px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--warm1) 0%, var(--warm2) 100%);
+      text-decoration: none;
+      color: var(--text);
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      box-shadow: 0 2px 10px rgba(180,100,40,0.08);
+    }
+    .site-link:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(180,100,40,0.18);
+    }
+    .site-emoji { font-size: 2.4rem; flex-shrink: 0; }
+    .site-info strong { font-size: 1rem; font-weight: 800; display: block; }
+    .site-info span { font-size: 0.82rem; color: var(--muted); margin-top: 2px; display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      main { grid-template-columns: 1fr; }
+      #weer-card, #kalender-card, #taken-card, #sites-card {
+        grid-column: 1 / -1;
+      }
+      .sites-grid { grid-template-columns: 1fr; }
+      header { padding: 20px; }
+      .header-left h1 { font-size: 1.5rem; }
+      #clock { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>🏠 Familie Dielhoff</h1>
+    <p>Welkom thuis — fijn dat je er bent!</p>
+  </div>
+  <div class="header-right">
+    <div id="clock">--:--</div>
+    <div id="datum">laden...</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- WEER -->
+  <div class="card" id="weer-card">
+    <div class="weer-main">
+      <div id="weer-icon">🌤</div>
+      <div>
+        <div id="weer-temp">--°C</div>
+        <div id="weer-desc">Waalwijk laden...</div>
+        <div id="weer-locatie">📍 Waalwijk</div>
+      </div>
+    </div>
+    <div class="weer-details">
+      <div class="weer-detail">
+        <span>💧</span>
+        <strong id="weer-regen">--%</strong>
+        <p>Neerslag kans</p>
+      </div>
+      <div class="weer-detail">
+        <span>💨</span>
+        <strong id="weer-wind">-- km/u</strong>
+        <p>Wind</p>
+      </div>
+      <div class="weer-detail">
+        <span>🌡</span>
+        <strong id="weer-min-max">--/--</strong>
+        <p>Min / Max</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- KALENDER -->
+  <div class="card" id="kalender-card">
+    <div class="card-title">📅 Gezinsagenda</div>
+    <!--
+      INSTRUCTIE: Vervang onderstaande src door jouw Google Calendar embed-link.
+      Ga naar Google Calendar → Instellingen → jouw agenda → "Insluiten" → kopieer de src-URL.
+      Zet de agenda op "Openbaar" of deel hem met iedereen in het gezin.
+    -->
+    <iframe
+      src="https://calendar.google.com/calendar/embed?src=dc4rg69hf3n0njnhvg85frel14%40group.calendar.google.com&ctz=Europe%2FAmsterdam&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&hl=nl"
+      style="border:0"
+      frameborder="0"
+      scrolling="no">
+    </iframe>
+  </div>
+
+  <!-- TAKEN -->
+  <div class="card" id="taken-card">
+    <div class="card-title">✅ Taken & Boodschappen</div>
+    <div class="taken-tabs">
+      <button class="tab-btn active" onclick="setTab('taken')">📋 Taken</button>
+      <button class="tab-btn" onclick="setTab('boodschappen')">🛒 Boodschappen</button>
+    </div>
+    <div class="taken-lijst" id="taken-lijst"></div>
+    <div class="taak-input-row">
+      <input type="text" id="taak-input" placeholder="Toevoegen..." onkeydown="if(event.key==='Enter') voegToe()" />
+      <button onclick="voegToe()">＋</button>
+    </div>
+  </div>
+
+  <!-- ONZE SITES -->
+  <div class="card" id="sites-card">
+    <div class="card-title">🔗 Onze plekken</div>
+    <div class="sites-grid">
+      <a class="site-link" href="https://dielhoff-tech.github.io/konijnen-liz-charli/" target="_blank">
+        <span class="site-emoji">🐰</span>
+        <div class="site-info">
+          <strong>Konijnen Liz & Charli</strong>
+          <span>Alles over onze lieve konijnen</span>
+        </div>
+      </a>
+      <a class="site-link" href="https://dielhoff-tech.github.io/verstappen-nieuws/" target="_blank">
+        <span class="site-emoji">🏎️</span>
+        <div class="site-info">
+          <strong>Verstappen Nieuws</strong>
+          <span>Laatste F1 updates & race info</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Gemaakt met ❤️ voor Familie Dielhoff &bull; Waalwijk
+</footer>
+
+<script>
+  /* ── KLOK ── */
+  const dagen = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const maanden = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+
+  function updateKlok() {
+    const nu = new Date();
+    const h = String(nu.getHours()).padStart(2,'0');
+    const m = String(nu.getMinutes()).padStart(2,'0');
+    document.getElementById('clock').textContent = h + ':' + m;
+    document.getElementById('datum').textContent =
+      dagen[nu.getDay()] + ' ' + nu.getDate() + ' ' + maanden[nu.getMonth()] + ' ' + nu.getFullYear();
+  }
+  updateKlok();
+  setInterval(updateKlok, 10000);
+
+  /* ── WEER (Open-Meteo, geen API-key nodig) ── */
+  const WEER_CODES = {
+    0:'Stralend zonnig ☀️', 1:'Overwegend helder 🌤', 2:'Gedeeltelijk bewolkt ⛅',
+    3:'Bewolkt ☁️', 45:'Mist 🌫', 48:'Rijp mist 🌫', 51:'Lichte motregen 🌦',
+    53:'Matige motregen 🌦', 55:'Dichte motregen 🌧', 61:'Lichte regen 🌧',
+    63:'Matige regen 🌧', 65:'Zware regen 🌧', 71:'Lichte sneeuw 🌨',
+    73:'Matige sneeuw 🌨', 75:'Zware sneeuw ❄️', 80:'Lichte buien 🌦',
+    81:'Buien 🌧', 82:'Zware buien ⛈', 95:'Onweer ⛈', 96:'Onweer met hagel ⛈'
+  };
+  const WEER_ICONS = {
+    0:'☀️', 1:'🌤', 2:'⛅', 3:'☁️', 45:'🌫', 48:'🌫',
+    51:'🌦', 53:'🌦', 55:'🌧', 61:'🌧', 63:'🌧', 65:'🌧',
+    71:'🌨', 73:'🌨', 75:'❄️', 80:'🌦', 81:'🌧', 82:'⛈', 95:'⛈', 96:'⛈'
+  };
+
+  async function laadWeer() {
+    try {
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=51.6897&longitude=5.0672&current=temperature_2m,weathercode,windspeed_10m,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FAmsterdam&forecast_days=1';
+      const res = await fetch(url);
+      const d = await res.json();
+      const c = d.current;
+      const dly = d.daily;
+      const code = c.weathercode;
+
+      document.getElementById('weer-icon').textContent = WEER_ICONS[code] || '🌡';
+      document.getElementById('weer-temp').textContent = Math.round(c.temperature_2m) + '°C';
+      document.getElementById('weer-desc').textContent = WEER_CODES[code] || 'Onbekend';
+      document.getElementById('weer-regen').textContent = (c.precipitation_probability ?? dly.precipitation_probability_max[0]) + '%';
+      document.getElementById('weer-wind').textContent = Math.round(c.windspeed_10m) + ' km/u';
+      document.getElementById('weer-min-max').textContent =
+        Math.round(dly.temperature_2m_min[0]) + '° / ' + Math.round(dly.temperature_2m_max[0]) + '°';
+    } catch(e) {
+      document.getElementById('weer-desc').textContent = 'Weer tijdelijk niet beschikbaar';
+    }
+  }
+  laadWeer();
+
+  /* ── TAKEN / BOODSCHAPPEN ── */
+  let huidigTab = 'taken';
+
+  function setTab(tab) {
+    huidigTab = tab;
+    document.querySelectorAll('.tab-btn').forEach((b,i) => {
+      b.classList.toggle('active', (i === 0 && tab === 'taken') || (i === 1 && tab === 'boodschappen'));
+    });
+    renderLijst();
+    document.getElementById('taak-input').placeholder =
+      tab === 'taken' ? 'Nieuwe taak toevoegen...' : 'Item toevoegen...';
+  }
+
+  function getLijst() {
+    return JSON.parse(localStorage.getItem('hub_' + huidigTab) || '[]');
+  }
+  function slaOp(lijst) {
+    localStorage.setItem('hub_' + huidigTab, JSON.stringify(lijst));
+  }
+
+  function renderLijst() {
+    const lijst = getLijst();
+    const el = document.getElementById('taken-lijst');
+    if (lijst.length === 0) {
+      el.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;text-align:center;padding:20px 0;">Niets op de lijst — lekker rustig! 🎉</p>';
+      return;
+    }
+    el.innerHTML = lijst.map((item, i) => `
+      <div class="taak-item ${item.gedaan ? 'gedaan' : ''}">
+        <button class="taak-check ${item.gedaan ? 'checked' : ''}" onclick="toggleTaak(${i})">${item.gedaan ? '✓' : ''}</button>
+        <span class="taak-tekst">${escHTML(item.tekst)}</span>
+        <button class="taak-del" onclick="verwijderTaak(${i})">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function escHTML(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function voegToe() {
+    const inp = document.getElementById('taak-input');
+    const tekst = inp.value.trim();
+    if (!tekst) return;
+    const lijst = getLijst();
+    lijst.push({ tekst, gedaan: false });
+    slaOp(lijst);
+    inp.value = '';
+    renderLijst();
+  }
+
+  function toggleTaak(i) {
+    const lijst = getLijst();
+    lijst[i].gedaan = !lijst[i].gedaan;
+    slaOp(lijst);
+    renderLijst();
+  }
+
+  function verwijderTaak(i) {
+    const lijst = getLijst();
+    lijst.splice(i, 1);
+    slaOp(lijst);
+    renderLijst();
+  }
+
+  renderLijst();
+</script>
+</body>
+</html>
