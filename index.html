@@ -531,7 +531,29 @@
 
 <footer>Gemaakt met ❤️ voor Familie Dielhoff &bull; Waalwijk</footer>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
+
+/* ────────────── FIREBASE ────────────── */
+firebase.initializeApp({
+  apiKey: "AIzaSyCUAQjAI2hCd2eVcZcG6LemaG2eo5f1u_w",
+  authDomain: "familie-dielhoff.firebaseapp.com",
+  databaseURL: "https://familie-dielhoff-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "familie-dielhoff",
+  storageBucket: "familie-dielhoff.firebasestorage.app",
+  messagingSenderId: "1002566430033",
+  appId: "1:1002566430033:web:95d32a314173f3bff07770"
+});
+const db = firebase.database();
+
+const staat = { taken: [], boodschappen: [], prikbord: [], complimenten: [] };
+
+db.ref('taken').on('value',        s => { staat.taken        = s.val() || []; renderLijst(); });
+db.ref('boodschappen').on('value', s => { staat.boodschappen = s.val() || []; renderLijst(); });
+db.ref('prikbord').on('value',     s => { staat.prikbord     = s.val() || []; renderPrikbord(); });
+db.ref('complimenten').on('value', s => { staat.complimenten = s.val() || []; renderComplimenten(); });
+
 /* ────────────── KLOK ────────────── */
 const DAGEN   = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
 const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
@@ -715,11 +737,10 @@ function setTab(tab) {
   document.getElementById('taak-input').placeholder = tab==='taken' ? 'Nieuwe taak...' : 'Item toevoegen...';
 }
 
-function getLijst() { return JSON.parse(localStorage.getItem('hub_' + huidigTab) || '[]'); }
-function slaOp(l)   { localStorage.setItem('hub_' + huidigTab, JSON.stringify(l)); }
+function slaOp(l) { db.ref(huidigTab).set(l); }
 
 function renderLijst() {
-  const lijst = getLijst();
+  const lijst = staat[huidigTab];
   const el = document.getElementById('taken-lijst');
   if (!lijst.length) {
     el.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;text-align:center;padding:20px 0;">Niets op de lijst — lekker rustig! 🎉</p>';
@@ -741,22 +762,19 @@ function voegToe() {
   const inp = document.getElementById('taak-input');
   const tekst = inp.value.trim();
   if (!tekst) return;
-  const l = getLijst();
-  l.push({tekst, gedaan:false});
-  slaOp(l); inp.value = ''; renderLijst();
+  const l = [...staat[huidigTab], {tekst, gedaan:false}];
+  slaOp(l); inp.value = '';
 }
-function toggleTaak(i)   { const l=getLijst(); l[i].gedaan=!l[i].gedaan; slaOp(l); renderLijst(); }
-function verwijderTaak(i){ const l=getLijst(); l.splice(i,1); slaOp(l); renderLijst(); }
-renderLijst();
+function toggleTaak(i)    { const l=[...staat[huidigTab]]; l[i].gedaan=!l[i].gedaan; slaOp(l); }
+function verwijderTaak(i) { const l=[...staat[huidigTab]]; l.splice(i,1); slaOp(l); }
 
 /* ────────────── PRIKBORD ────────────── */
 const ROTATIES = ['-2deg','1.5deg','-1deg','2.5deg','0deg','-1.5deg','1deg'];
 
-function getPrikbord() { return JSON.parse(localStorage.getItem('hub_prikbord') || '[]'); }
-function slaOpPrikbord(b) { localStorage.setItem('hub_prikbord', JSON.stringify(b)); }
+function slaOpPrikbord(b) { db.ref('prikbord').set(b); }
 
 function renderPrikbord() {
-  const berichten = getPrikbord();
+  const berichten = staat.prikbord;
   const grid = document.getElementById('prikbord-grid');
   if (!berichten.length) {
     grid.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;padding:10px 0;">Nog geen berichtjes — wees de eerste! 📌</p>';
@@ -778,20 +796,13 @@ function plaatsBriefje() {
   const nu  = new Date();
   const tid = DAGEN[nu.getDay()] + ' ' + nu.getDate() + ' ' + MAANDEN[nu.getMonth()] +
               ' om ' + String(nu.getHours()).padStart(2,'0') + ':' + String(nu.getMinutes()).padStart(2,'0');
-  const b = getPrikbord();
-  b.unshift({van, tekst, tijd: tid});
-  slaOpPrikbord(b);
+  slaOpPrikbord([{van, tekst, tijd: tid}, ...staat.prikbord]);
   document.getElementById('pb-tekst').value = '';
-  renderPrikbord();
 }
 
 function verwijderBriefje(i) {
-  const b = getPrikbord();
-  b.splice(i,1);
-  slaOpPrikbord(b);
-  renderPrikbord();
+  const b = [...staat.prikbord]; b.splice(i,1); slaOpPrikbord(b);
 }
-renderPrikbord();
 
 /* ────────────── VERJAARDAGEN ────────────── */
 const VERJAARDAGEN = [
@@ -837,11 +848,10 @@ renderVerjaardagen();
 /* ────────────── COMPLIMENTENBOARD ────────────── */
 const STERREN = ['⭐','🌟','✨','💫','🏆','🎉','💪','👏','🥇','❤️'];
 
-function getComplimenten() { return JSON.parse(localStorage.getItem('hub_complimenten') || '[]'); }
-function slaOpComplimenten(c) { localStorage.setItem('hub_complimenten', JSON.stringify(c)); }
+function slaOpComplimenten(c) { db.ref('complimenten').set(c); }
 
 function renderComplimenten() {
-  const lijst = getComplimenten();
+  const lijst = staat.complimenten;
   const el = document.getElementById('compliment-lijst');
   if (!lijst.length) {
     el.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;text-align:center;padding:16px 0;">Geef het eerste compliment! 🌟</p>';
@@ -862,20 +872,13 @@ function geefCompliment() {
   const van   = document.getElementById('cp-van').value;
   const tekst = document.getElementById('cp-tekst').value.trim();
   if (!tekst) return;
-  const lijst = getComplimenten();
-  lijst.unshift({ van, tekst });
-  slaOpComplimenten(lijst);
+  slaOpComplimenten([{ van, tekst }, ...staat.complimenten]);
   document.getElementById('cp-tekst').value = '';
-  renderComplimenten();
 }
 
 function verwijderCompliment(i) {
-  const lijst = getComplimenten();
-  lijst.splice(i, 1);
-  slaOpComplimenten(lijst);
-  renderComplimenten();
+  const lijst = [...staat.complimenten]; lijst.splice(i,1); slaOpComplimenten(lijst);
 }
-renderComplimenten();
 
 /* ────────────── FILM VAN DE WEEK ────────────── */
 const FILMS = [
