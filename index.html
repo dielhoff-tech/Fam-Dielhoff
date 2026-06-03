@@ -120,7 +120,17 @@
 
     /* KALENDER */
     #kalender-card { grid-column: 1 / 2; }
-    #kalender-card iframe { width: 100%; height: 420px; border: none; border-radius: 12px; }
+    #kalender-card iframe { width: 100%; height: 560px; border: none; border-radius: 12px; }
+    .kalender-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .kalender-header .card-title { margin-bottom: 0; }
+    .btn-afspraak {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 10px;
+      background: var(--accent); color: #fff; text-decoration: none;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.88rem;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-afspraak:hover { background: var(--accent2); }
 
     /* TAKEN */
     #taken-card { grid-column: 2 / 3; display: flex; flex-direction: column; }
@@ -305,7 +315,10 @@
 
   <!-- GEZINSAGENDA -->
   <div class="card" id="kalender-card">
-    <div class="card-title">📅 Gezinsagenda</div>
+    <div class="kalender-header">
+      <div class="card-title">📅 Gezinsagenda</div>
+      <a class="btn-afspraak" href="https://calendar.google.com/calendar/r/eventedit?cid=dc4rg69hf3n0njnhvg85frel14%40group.calendar.google.com" target="_blank">＋ Afspraak toevoegen</a>
+    </div>
     <iframe
       src="https://calendar.google.com/calendar/embed?src=dc4rg69hf3n0njnhvg85frel14%40group.calendar.google.com&ctz=Europe%2FAmsterdam&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&hl=nl"
       style="border:0" frameborder="0" scrolling="no">
