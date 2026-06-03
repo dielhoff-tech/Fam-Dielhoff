@@ -19,287 +19,227 @@
       --shadow:  0 4px 20px rgba(180,100,40,0.10);
       --radius:  18px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
 
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--cream);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* ── HEADER ── */
+    /* HEADER */
     header {
       background: linear-gradient(135deg, #e07b39 0%, #c0583a 100%);
-      color: #fff;
-      padding: 28px 32px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
+      color: #fff; padding: 28px 32px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
       box-shadow: 0 4px 16px rgba(200,80,40,0.25);
     }
+    .header-left h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; }
+    .header-left p  { font-size: 0.95rem; opacity: 0.88; margin-top: 2px; }
+    .header-right   { text-align: right; }
+    #clock  { font-size: 2.2rem; font-weight: 800; letter-spacing: 1px; }
+    #datum  { font-size: 0.9rem; opacity: 0.85; }
 
-    .header-left h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-    .header-left p {
-      font-size: 0.95rem;
-      opacity: 0.88;
-      margin-top: 2px;
-    }
-
-    .header-right {
-      text-align: right;
-    }
-    #clock {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-    #datum {
-      font-size: 0.9rem;
-      opacity: 0.85;
-    }
-
-    /* ── GRID ── */
+    /* GRID */
     main {
-      max-width: 1200px;
-      margin: 32px auto;
+      max-width: 1200px; margin: 32px auto;
       padding: 0 20px 40px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto;
       gap: 24px;
     }
 
-    /* kaart-basis */
     .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px;
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 24px;
       border: 1.5px solid var(--warm1);
     }
-
     .card-title {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--accent2);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 1.05rem; font-weight: 800; color: var(--accent2);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
     }
 
-    /* ── WEER ── */
+    /* WEER VANDAAG */
     #weer-card {
       grid-column: 1 / -1;
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 32px; flex-wrap: wrap;
     }
-
-    .weer-main {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    #weer-icon { font-size: 3.5rem; line-height: 1; }
-    #weer-temp { font-size: 3rem; font-weight: 800; color: var(--accent); }
-    #weer-desc { font-size: 1rem; color: var(--muted); margin-top: 2px; }
+    .weer-main { display: flex; align-items: center; gap: 16px; }
+    #weer-icon  { font-size: 3.5rem; line-height: 1; }
+    #weer-temp  { font-size: 3rem; font-weight: 800; color: var(--accent); }
+    #weer-desc  { font-size: 1rem; color: var(--muted); margin-top: 2px; }
     #weer-locatie { font-size: 0.85rem; color: var(--muted); }
+    .weer-details { display: flex; gap: 24px; flex-wrap: wrap; margin-left: auto; }
+    .weer-detail  { text-align: center; }
+    .weer-detail span:first-child { font-size: 1.4rem; }
+    .weer-detail p { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .weer-detail strong { display: block; font-size: 0.95rem; color: var(--text); }
 
-    .weer-details {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      margin-left: auto;
+    /* WEER 5 DAGEN */
+    #prognose-card { grid-column: 1 / -1; }
+    .prognose-rij {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
     }
-    .weer-detail {
-      text-align: center;
+    .prognose-dag {
+      background: var(--warm1); border-radius: 14px;
+      padding: 14px 10px; text-align: center;
+      border: 1.5px solid var(--warm2);
     }
-    .weer-detail span:first-child {
-      font-size: 1.4rem;
-    }
-    .weer-detail p {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .weer-detail strong {
-      display: block;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
+    .prognose-dag .dag-naam { font-size: 0.8rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .prognose-dag .dag-icon { font-size: 2rem; margin: 6px 0; }
+    .prognose-dag .dag-max  { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+    .prognose-dag .dag-min  { font-size: 0.82rem; color: var(--muted); }
+    .prognose-dag .dag-neerslag { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
 
-    /* ── KALENDER ── */
-    #kalender-card {
-      grid-column: 1 / 2;
+    /* WEEKEND COUNTDOWN */
+    #weekend-card { grid-column: 1 / 2; text-align: center; }
+    .weekend-getal {
+      font-size: 4rem; font-weight: 800; color: var(--accent);
+      line-height: 1; margin: 8px 0 4px;
     }
-    #kalender-card iframe {
-      width: 100%;
-      height: 420px;
-      border: none;
-      border-radius: 12px;
-    }
+    .weekend-label { font-size: 1rem; color: var(--muted); }
+    .weekend-balk-wrap { background: var(--warm1); border-radius: 20px; height: 12px; margin: 16px 0 8px; overflow: hidden; }
+    .weekend-balk      { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.5s; }
+    #weekend-sub       { font-size: 0.82rem; color: var(--muted); }
 
-    /* ── TAKEN ── */
-    #taken-card {
-      grid-column: 2 / 3;
-      display: flex;
-      flex-direction: column;
+    /* DAGELIJKSE QUOTE */
+    #quote-card { grid-column: 2 / 3; display: flex; flex-direction: column; justify-content: center; }
+    .quote-tekst {
+      font-size: 1.25rem; font-weight: 700; color: var(--text);
+      line-height: 1.5; margin-bottom: 12px;
+      padding-left: 16px;
+      border-left: 4px solid var(--accent);
     }
+    .quote-auteur { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+    .quote-nieuw  {
+      margin-top: 14px; background: none; border: 2px solid var(--warm2);
+      border-radius: 10px; padding: 7px 14px; cursor: pointer;
+      font-family: 'Nunito', sans-serif; font-weight: 700;
+      font-size: 0.85rem; color: var(--muted); transition: all 0.2s;
+      align-self: flex-start;
+    }
+    .quote-nieuw:hover { border-color: var(--accent); color: var(--accent); }
 
-    .taken-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
+    /* KALENDER */
+    #kalender-card { grid-column: 1 / 2; }
+    #kalender-card iframe { width: 100%; height: 420px; border: none; border-radius: 12px; }
+
+    /* TAKEN */
+    #taken-card { grid-column: 2 / 3; display: flex; flex-direction: column; }
+    .taken-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
     .tab-btn {
-      flex: 1;
-      padding: 8px;
-      border: 2px solid var(--warm2);
-      border-radius: 10px;
-      background: transparent;
-      cursor: pointer;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--muted);
-      transition: all 0.2s;
+      flex: 1; padding: 8px; border: 2px solid var(--warm2);
+      border-radius: 10px; background: transparent; cursor: pointer;
+      font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem;
+      color: var(--muted); transition: all 0.2s;
     }
-    .tab-btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .taken-lijst {
-      flex: 1;
-      overflow-y: auto;
-      max-height: 280px;
-      margin-bottom: 14px;
-    }
-
+    .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .taken-lijst { flex: 1; overflow-y: auto; max-height: 280px; margin-bottom: 14px; }
     .taak-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 10px;
-      background: var(--warm1);
-      margin-bottom: 8px;
-      transition: opacity 0.2s;
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      background: var(--warm1); margin-bottom: 8px; transition: opacity 0.2s;
     }
     .taak-item.gedaan { opacity: 0.45; }
     .taak-item.gedaan .taak-tekst { text-decoration: line-through; }
-
     .taak-check {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      border: 2.5px solid var(--accent);
-      background: transparent;
-      cursor: pointer;
-      flex-shrink: 0;
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2.5px solid var(--accent); background: transparent;
+      cursor: pointer; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem;
-      transition: background 0.15s;
+      font-size: 0.85rem; transition: background 0.15s;
     }
     .taak-check.checked { background: var(--green); border-color: var(--green); color: #fff; }
-
     .taak-tekst { flex: 1; font-size: 0.92rem; font-weight: 600; }
-
     .taak-del {
-      background: none; border: none; cursor: pointer;
-      font-size: 1rem; color: var(--muted);
-      opacity: 0.5; transition: opacity 0.15s;
-      padding: 2px 4px;
+      background: none; border: none; cursor: pointer; font-size: 1rem;
+      color: var(--muted); opacity: 0.5; transition: opacity 0.15s; padding: 2px 4px;
     }
     .taak-del:hover { opacity: 1; color: var(--accent2); }
-
-    .taak-input-row {
-      display: flex;
-      gap: 8px;
-    }
+    .taak-input-row { display: flex; gap: 8px; }
     .taak-input-row input {
-      flex: 1;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 2px solid var(--warm2);
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.9rem;
-      background: var(--cream);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
+      flex: 1; padding: 10px 14px; border-radius: 10px;
+      border: 2px solid var(--warm2); font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem; background: var(--cream); color: var(--text);
+      outline: none; transition: border-color 0.2s;
     }
     .taak-input-row input:focus { border-color: var(--accent); }
     .taak-input-row button {
-      padding: 10px 16px;
-      border-radius: 10px;
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 800;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 10px 16px; border-radius: 10px; border: none;
+      background: var(--accent); color: #fff; font-family: 'Nunito', sans-serif;
+      font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: background 0.2s;
     }
     .taak-input-row button:hover { background: var(--accent2); }
 
-    /* ── ONZE SITES ── */
-    #sites-card {
-      grid-column: 1 / -1;
+    /* PRIKBORD */
+    #prikbord-card { grid-column: 1 / -1; }
+    .prikbord-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px; min-height: 60px; }
+    .briefje {
+      background: #fff9c4; border-radius: 12px;
+      padding: 14px 14px 10px; position: relative;
+      box-shadow: 2px 3px 10px rgba(0,0,0,0.08);
+      border: 1.5px solid #f0e060;
+      transform: rotate(var(--rot));
     }
-    .sites-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    .briefje .briefje-van   { font-size: 0.75rem; font-weight: 800; color: var(--accent2); margin-bottom: 6px; }
+    .briefje .briefje-tekst { font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.4; word-break: break-word; }
+    .briefje .briefje-tijd  { font-size: 0.7rem; color: var(--muted); margin-top: 8px; }
+    .briefje .briefje-del {
+      position: absolute; top: 8px; right: 10px;
+      background: none; border: none; cursor: pointer;
+      font-size: 0.9rem; color: var(--muted); opacity: 0.4;
+      transition: opacity 0.15s;
     }
+    .briefje .briefje-del:hover { opacity: 1; color: var(--accent2); }
+
+    .prikbord-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .prikbord-form select,
+    .prikbord-form input,
+    .prikbord-form textarea {
+      font-family: 'Nunito', sans-serif; font-size: 0.9rem;
+      border: 2px solid var(--warm2); border-radius: 10px;
+      padding: 9px 12px; background: var(--cream); color: var(--text);
+      outline: none; transition: border-color 0.2s;
+    }
+    .prikbord-form select:focus,
+    .prikbord-form input:focus,
+    .prikbord-form textarea:focus { border-color: var(--accent); }
+    .prikbord-form select  { flex: 0 0 140px; }
+    .prikbord-form textarea { flex: 1; min-width: 180px; resize: none; height: 42px; line-height: 1.3; padding-top: 10px; }
+    .prikbord-form button {
+      padding: 9px 18px; border-radius: 10px; border: none;
+      background: var(--accent); color: #fff;
+      font-family: 'Nunito', sans-serif; font-weight: 800;
+      font-size: 0.95rem; cursor: pointer; transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .prikbord-form button:hover { background: var(--accent2); }
+
+    /* ONZE SITES */
+    #sites-card { grid-column: 1 / -1; }
+    .sites-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .site-link {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px 22px;
-      border-radius: 14px;
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 22px; border-radius: 14px;
       background: linear-gradient(135deg, var(--warm1) 0%, var(--warm2) 100%);
-      text-decoration: none;
-      color: var(--text);
-      border: 2px solid transparent;
-      transition: all 0.2s;
+      text-decoration: none; color: var(--text);
+      border: 2px solid transparent; transition: all 0.2s;
       box-shadow: 0 2px 10px rgba(180,100,40,0.08);
     }
-    .site-link:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(180,100,40,0.18);
-    }
+    .site-link:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(180,100,40,0.18); }
     .site-emoji { font-size: 2.4rem; flex-shrink: 0; }
     .site-info strong { font-size: 1rem; font-weight: 800; display: block; }
-    .site-info span { font-size: 0.82rem; color: var(--muted); margin-top: 2px; display: block; }
+    .site-info span   { font-size: 0.82rem; color: var(--muted); margin-top: 2px; display: block; }
 
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
+    /* FOOTER */
+    footer { text-align: center; padding: 20px; font-size: 0.8rem; color: var(--muted); }
 
-    /* ── RESPONSIVE ── */
+    /* RESPONSIVE */
     @media (max-width: 720px) {
       main { grid-template-columns: 1fr; }
-      #weer-card, #kalender-card, #taken-card, #sites-card {
-        grid-column: 1 / -1;
-      }
+      #weer-card, #prognose-card, #weekend-card, #quote-card,
+      #kalender-card, #taken-card, #prikbord-card, #sites-card { grid-column: 1 / -1; }
       .sites-grid { grid-template-columns: 1fr; }
+      .prognose-rij { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+      .prognose-dag { padding: 10px 6px; }
       header { padding: 20px; }
       .header-left h1 { font-size: 1.5rem; }
       #clock { font-size: 1.7rem; }
@@ -321,7 +261,7 @@
 
 <main>
 
-  <!-- WEER -->
+  <!-- WEER VANDAAG -->
   <div class="card" id="weer-card">
     <div class="weer-main">
       <div id="weer-icon">🌤</div>
@@ -332,41 +272,47 @@
       </div>
     </div>
     <div class="weer-details">
-      <div class="weer-detail">
-        <span>💧</span>
-        <strong id="weer-regen">--%</strong>
-        <p>Neerslag kans</p>
-      </div>
-      <div class="weer-detail">
-        <span>💨</span>
-        <strong id="weer-wind">-- km/u</strong>
-        <p>Wind</p>
-      </div>
-      <div class="weer-detail">
-        <span>🌡</span>
-        <strong id="weer-min-max">--/--</strong>
-        <p>Min / Max</p>
-      </div>
+      <div class="weer-detail"><span>💧</span><strong id="weer-regen">--%</strong><p>Neerslag kans</p></div>
+      <div class="weer-detail"><span>💨</span><strong id="weer-wind">-- km/u</strong><p>Wind</p></div>
+      <div class="weer-detail"><span>🌡</span><strong id="weer-min-max">--/--</strong><p>Min / Max</p></div>
     </div>
   </div>
 
-  <!-- KALENDER -->
+  <!-- WEER 5 DAGEN -->
+  <div class="card" id="prognose-card">
+    <div class="card-title">📆 Weer de komende 5 dagen</div>
+    <div class="prognose-rij" id="prognose-rij">
+      <div class="prognose-dag"><div class="dag-naam">–</div><div class="dag-icon">…</div><div class="dag-max">–</div><div class="dag-min">–</div></div>
+    </div>
+  </div>
+
+  <!-- WEEKEND COUNTDOWN -->
+  <div class="card" id="weekend-card">
+    <div class="card-title">🎉 Weekend afteller</div>
+    <div class="weekend-getal" id="weekend-getal">–</div>
+    <div class="weekend-label" id="weekend-label">laden...</div>
+    <div class="weekend-balk-wrap"><div class="weekend-balk" id="weekend-balk" style="width:0%"></div></div>
+    <div id="weekend-sub"></div>
+  </div>
+
+  <!-- DAGELIJKSE QUOTE -->
+  <div class="card" id="quote-card">
+    <div class="card-title">💬 Quote van de dag</div>
+    <div class="quote-tekst" id="quote-tekst">laden...</div>
+    <div class="quote-auteur" id="quote-auteur"></div>
+    <button class="quote-nieuw" onclick="volgendeQuote()">🔄 Andere quote</button>
+  </div>
+
+  <!-- GEZINSAGENDA -->
   <div class="card" id="kalender-card">
     <div class="card-title">📅 Gezinsagenda</div>
-    <!--
-      INSTRUCTIE: Vervang onderstaande src door jouw Google Calendar embed-link.
-      Ga naar Google Calendar → Instellingen → jouw agenda → "Insluiten" → kopieer de src-URL.
-      Zet de agenda op "Openbaar" of deel hem met iedereen in het gezin.
-    -->
     <iframe
       src="https://calendar.google.com/calendar/embed?src=dc4rg69hf3n0njnhvg85frel14%40group.calendar.google.com&ctz=Europe%2FAmsterdam&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&hl=nl"
-      style="border:0"
-      frameborder="0"
-      scrolling="no">
+      style="border:0" frameborder="0" scrolling="no">
     </iframe>
   </div>
 
-  <!-- TAKEN -->
+  <!-- TAKEN & BOODSCHAPPEN -->
   <div class="card" id="taken-card">
     <div class="card-title">✅ Taken & Boodschappen</div>
     <div class="taken-tabs">
@@ -380,152 +326,298 @@
     </div>
   </div>
 
+  <!-- PRIKBORD -->
+  <div class="card" id="prikbord-card">
+    <div class="card-title">📌 Prikbord voor elkaar</div>
+    <div class="prikbord-grid" id="prikbord-grid"></div>
+    <div class="prikbord-form">
+      <select id="pb-van">
+        <option value="Papa">👨 Papa</option>
+        <option value="Mama">👩 Mama</option>
+        <option value="Liz">🌸 Liz</option>
+        <option value="Charli">⭐ Charli</option>
+      </select>
+      <textarea id="pb-tekst" placeholder="Schrijf een berichtje..." maxlength="200" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();plaatsBriefje()}"></textarea>
+      <button onclick="plaatsBriefje()">📌 Plakken</button>
+    </div>
+  </div>
+
   <!-- ONZE SITES -->
   <div class="card" id="sites-card">
     <div class="card-title">🔗 Onze plekken</div>
     <div class="sites-grid">
       <a class="site-link" href="https://dielhoff-tech.github.io/konijnen-liz-charli/" target="_blank">
         <span class="site-emoji">🐰</span>
-        <div class="site-info">
-          <strong>Konijnen Liz & Charli</strong>
-          <span>Alles over onze lieve konijnen</span>
-        </div>
+        <div class="site-info"><strong>Konijnen Liz & Charli</strong><span>Alles over onze lieve konijnen</span></div>
       </a>
       <a class="site-link" href="https://dielhoff-tech.github.io/verstappen-nieuws/" target="_blank">
         <span class="site-emoji">🏎️</span>
-        <div class="site-info">
-          <strong>Verstappen Nieuws</strong>
-          <span>Laatste F1 updates & race info</span>
-        </div>
+        <div class="site-info"><strong>Verstappen Nieuws</strong><span>Laatste F1 updates & race info</span></div>
       </a>
     </div>
   </div>
 
 </main>
 
-<footer>
-  Gemaakt met ❤️ voor Familie Dielhoff &bull; Waalwijk
-</footer>
+<footer>Gemaakt met ❤️ voor Familie Dielhoff &bull; Waalwijk</footer>
 
 <script>
-  /* ── KLOK ── */
-  const dagen = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
-  const maanden = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+/* ────────────── KLOK ────────────── */
+const DAGEN   = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const DAGEN_K = ['zo','ma','di','wo','do','vr','za'];
 
-  function updateKlok() {
-    const nu = new Date();
-    const h = String(nu.getHours()).padStart(2,'0');
-    const m = String(nu.getMinutes()).padStart(2,'0');
-    document.getElementById('clock').textContent = h + ':' + m;
-    document.getElementById('datum').textContent =
-      dagen[nu.getDay()] + ' ' + nu.getDate() + ' ' + maanden[nu.getMonth()] + ' ' + nu.getFullYear();
-  }
-  updateKlok();
-  setInterval(updateKlok, 10000);
+function updateKlok() {
+  const nu = new Date();
+  document.getElementById('clock').textContent =
+    String(nu.getHours()).padStart(2,'0') + ':' + String(nu.getMinutes()).padStart(2,'0');
+  document.getElementById('datum').textContent =
+    DAGEN[nu.getDay()] + ' ' + nu.getDate() + ' ' + MAANDEN[nu.getMonth()] + ' ' + nu.getFullYear();
+}
+updateKlok();
+setInterval(updateKlok, 10000);
 
-  /* ── WEER (Open-Meteo, geen API-key nodig) ── */
-  const WEER_CODES = {
-    0:'Stralend zonnig ☀️', 1:'Overwegend helder 🌤', 2:'Gedeeltelijk bewolkt ⛅',
-    3:'Bewolkt ☁️', 45:'Mist 🌫', 48:'Rijp mist 🌫', 51:'Lichte motregen 🌦',
-    53:'Matige motregen 🌦', 55:'Dichte motregen 🌧', 61:'Lichte regen 🌧',
-    63:'Matige regen 🌧', 65:'Zware regen 🌧', 71:'Lichte sneeuw 🌨',
-    73:'Matige sneeuw 🌨', 75:'Zware sneeuw ❄️', 80:'Lichte buien 🌦',
-    81:'Buien 🌧', 82:'Zware buien ⛈', 95:'Onweer ⛈', 96:'Onweer met hagel ⛈'
-  };
-  const WEER_ICONS = {
-    0:'☀️', 1:'🌤', 2:'⛅', 3:'☁️', 45:'🌫', 48:'🌫',
-    51:'🌦', 53:'🌦', 55:'🌧', 61:'🌧', 63:'🌧', 65:'🌧',
-    71:'🌨', 73:'🌨', 75:'❄️', 80:'🌦', 81:'🌧', 82:'⛈', 95:'⛈', 96:'⛈'
-  };
+/* ────────────── WEER ────────────── */
+const CODES = {
+  0:'Stralend zonnig',1:'Overwegend helder',2:'Gedeeltelijk bewolkt',3:'Bewolkt',
+  45:'Mist',48:'Rijpmist',51:'Lichte motregen',53:'Motregen',55:'Dichte motregen',
+  61:'Lichte regen',63:'Regen',65:'Zware regen',71:'Lichte sneeuw',73:'Sneeuw',
+  75:'Zware sneeuw',80:'Lichte buien',81:'Buien',82:'Zware buien',95:'Onweer',96:'Onweer met hagel'
+};
+const ICONS = {
+  0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',
+  51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',
+  71:'🌨',73:'🌨',75:'❄️',80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈'
+};
 
-  async function laadWeer() {
-    try {
-      const url = 'https://api.open-meteo.com/v1/forecast?latitude=51.6897&longitude=5.0672&current=temperature_2m,weathercode,windspeed_10m,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FAmsterdam&forecast_days=1';
-      const res = await fetch(url);
-      const d = await res.json();
-      const c = d.current;
-      const dly = d.daily;
-      const code = c.weathercode;
+async function laadWeer() {
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=51.6897&longitude=5.0672' +
+      '&current=temperature_2m,weathercode,windspeed_10m,precipitation_probability' +
+      '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode' +
+      '&timezone=Europe%2FAmsterdam&forecast_days=6';
+    const d = await (await fetch(url)).json();
+    const c = d.current, dl = d.daily;
+    const code = c.weathercode;
 
-      document.getElementById('weer-icon').textContent = WEER_ICONS[code] || '🌡';
-      document.getElementById('weer-temp').textContent = Math.round(c.temperature_2m) + '°C';
-      document.getElementById('weer-desc').textContent = WEER_CODES[code] || 'Onbekend';
-      document.getElementById('weer-regen').textContent = (c.precipitation_probability ?? dly.precipitation_probability_max[0]) + '%';
-      document.getElementById('weer-wind').textContent = Math.round(c.windspeed_10m) + ' km/u';
-      document.getElementById('weer-min-max').textContent =
-        Math.round(dly.temperature_2m_min[0]) + '° / ' + Math.round(dly.temperature_2m_max[0]) + '°';
-    } catch(e) {
-      document.getElementById('weer-desc').textContent = 'Weer tijdelijk niet beschikbaar';
+    document.getElementById('weer-icon').textContent  = ICONS[code] || '🌡';
+    document.getElementById('weer-temp').textContent  = Math.round(c.temperature_2m) + '°C';
+    document.getElementById('weer-desc').textContent  = CODES[code] || 'Onbekend';
+    document.getElementById('weer-regen').textContent = (c.precipitation_probability ?? dl.precipitation_probability_max[0]) + '%';
+    document.getElementById('weer-wind').textContent  = Math.round(c.windspeed_10m) + ' km/u';
+    document.getElementById('weer-min-max').textContent =
+      Math.round(dl.temperature_2m_min[0]) + '° / ' + Math.round(dl.temperature_2m_max[0]) + '°';
+
+    /* 5-daagse prognose (sla dag 0 = vandaag over, toon dag 1-5) */
+    const rij = document.getElementById('prognose-rij');
+    rij.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const dt   = new Date(dl.time[i]);
+      const wc   = dl.weathercode[i];
+      const naam = DAGEN_K[dt.getDay()];
+      rij.innerHTML += `
+        <div class="prognose-dag">
+          <div class="dag-naam">${naam}</div>
+          <div class="dag-icon">${ICONS[wc] || '🌡'}</div>
+          <div class="dag-max">${Math.round(dl.temperature_2m_max[i])}°</div>
+          <div class="dag-min">${Math.round(dl.temperature_2m_min[i])}°</div>
+          <div class="dag-neerslag">💧${dl.precipitation_probability_max[i]}%</div>
+        </div>`;
     }
+  } catch(e) {
+    document.getElementById('weer-desc').textContent = 'Weer tijdelijk niet beschikbaar';
   }
-  laadWeer();
+}
+laadWeer();
 
-  /* ── TAKEN / BOODSCHAPPEN ── */
-  let huidigTab = 'taken';
+/* ────────────── WEEKEND AFTELLER ────────────── */
+function updateWeekend() {
+  const nu  = new Date();
+  const dag = nu.getDay(); // 0=zo, 6=za
+  const uur = nu.getHours(), min = nu.getMinutes();
 
-  function setTab(tab) {
-    huidigTab = tab;
-    document.querySelectorAll('.tab-btn').forEach((b,i) => {
-      b.classList.toggle('active', (i === 0 && tab === 'taken') || (i === 1 && tab === 'boodschappen'));
-    });
-    renderLijst();
-    document.getElementById('taak-input').placeholder =
-      tab === 'taken' ? 'Nieuwe taak toevoegen...' : 'Item toevoegen...';
-  }
+  const isWeekend = dag === 0 || dag === 6;
+  const el_g = document.getElementById('weekend-getal');
+  const el_l = document.getElementById('weekend-label');
+  const el_s = document.getElementById('weekend-sub');
+  const balk = document.getElementById('weekend-balk');
 
-  function getLijst() {
-    return JSON.parse(localStorage.getItem('hub_' + huidigTab) || '[]');
-  }
-  function slaOp(lijst) {
-    localStorage.setItem('hub_' + huidigTab, JSON.stringify(lijst));
-  }
-
-  function renderLijst() {
-    const lijst = getLijst();
-    const el = document.getElementById('taken-lijst');
-    if (lijst.length === 0) {
-      el.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;text-align:center;padding:20px 0;">Niets op de lijst — lekker rustig! 🎉</p>';
-      return;
-    }
-    el.innerHTML = lijst.map((item, i) => `
-      <div class="taak-item ${item.gedaan ? 'gedaan' : ''}">
-        <button class="taak-check ${item.gedaan ? 'checked' : ''}" onclick="toggleTaak(${i})">${item.gedaan ? '✓' : ''}</button>
-        <span class="taak-tekst">${escHTML(item.tekst)}</span>
-        <button class="taak-del" onclick="verwijderTaak(${i})">✕</button>
-      </div>
-    `).join('');
+  if (isWeekend) {
+    el_g.textContent = '🎉';
+    el_l.textContent = 'Het is weekend!';
+    el_s.textContent = 'Geniet ervan! 🥳';
+    balk.style.width = '100%';
+    return;
   }
 
-  function escHTML(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  /* seconden tot zaterdag 00:00 */
+  const dagenTot = (6 - dag) % 7;
+  const secTot = dagenTot * 86400 - (uur * 3600 + min * 60 + nu.getSeconds());
+  const urenTot = Math.floor(secTot / 3600);
+  const minTot  = Math.floor((secTot % 3600) / 60);
 
-  function voegToe() {
-    const inp = document.getElementById('taak-input');
-    const tekst = inp.value.trim();
-    if (!tekst) return;
-    const lijst = getLijst();
-    lijst.push({ tekst, gedaan: false });
-    slaOp(lijst);
-    inp.value = '';
-    renderLijst();
-  }
+  /* weekduur in sec = ma 00:00 → za 00:00 = 5 dagen */
+  const weekSec = 5 * 86400;
+  const verstreken = weekSec - secTot;
+  const pct = Math.min(100, Math.max(0, (verstreken / weekSec) * 100));
 
-  function toggleTaak(i) {
-    const lijst = getLijst();
-    lijst[i].gedaan = !lijst[i].gedaan;
-    slaOp(lijst);
-    renderLijst();
+  if (urenTot >= 24) {
+    const d = Math.floor(urenTot / 24);
+    const h = urenTot % 24;
+    el_g.textContent = d + (d === 1 ? ' dag' : ' dagen');
+    el_l.textContent = 'en ' + h + ' uur tot het weekend';
+  } else {
+    el_g.textContent = urenTot + 'u ' + minTot + 'm';
+    el_l.textContent = 'nog even volhouden! 💪';
   }
+  el_s.textContent = 'Week is ' + Math.round(pct) + '% voorbij';
+  balk.style.width = pct + '%';
+}
+updateWeekend();
+setInterval(updateWeekend, 30000);
 
-  function verwijderTaak(i) {
-    const lijst = getLijst();
-    lijst.splice(i, 1);
-    slaOp(lijst);
-    renderLijst();
-  }
+/* ────────────── QUOTE VAN DE DAG ────────────── */
+const QUOTES = [
+  { t: "Elke dag is een nieuw begin. Vandaag kun jij iets bereiken waar je gisteren nog niet aan dacht!", a: "Anoniem" },
+  { t: "Jij bent slimmer dan je denkt, sterker dan je voelt, en moediger dan je gelooft.", a: "A.A. Milne" },
+  { t: "Fouten maken betekent dat je iets probeert. Dat is al knap!", a: "Anoniem" },
+  { t: "Als je gelooft dat je het kunt, heb je al de helft gewonnen.", a: "Theodore Roosevelt" },
+  { t: "Wees jij. Iedereen anders is al bezet.", a: "Oscar Wilde" },
+  { t: "Elke expert was ooit een beginner die gewoon niet opgaf.", a: "Anoniem" },
+  { t: "Jouw dromen zijn de GPS van je hart. Volg ze!", a: "Anoniem" },
+  { t: "Zelfs de langste reis begint met één stap. Zet jij die stap vandaag?", a: "Lao Tzu" },
+  { t: "Je hoeft niet perfect te zijn om geweldig te zijn.", a: "Anoniem" },
+  { t: "Wat je aandacht geeft, groeit. Geef aandacht aan mooie dingen!", a: "Anoniem" },
+  { t: "Een lach kost niets maar geeft zoveel. Lach eens extra vandaag 😄", a: "Anoniem" },
+  { t: "Jij bent de schrijver van jouw eigen verhaal. Maak het een geweldig boek!", a: "Anoniem" },
+  { t: "Samen staan we sterker dan alleen.", a: "Anoniem" },
+  { t: "Kleine stapjes elke dag zorgen voor grote veranderingen.", a: "Anoniem" },
+  { t: "Wat je vandaag doet, bepaalt wie je morgen bent.", a: "Anoniem" },
+  { t: "De mooiste avonturen beginnen als je durft te proberen.", a: "Anoniem" },
+  { t: "Je bent als een ster: je schijnt het helderst als het donker is.", a: "Anoniem" },
+  { t: "Goede dingen komen naar mensen die hard werken én vriendelijk blijven.", a: "Anoniem" },
+  { t: "Elke dag dat je iets nieuws leert, word jij een beetje groter van binnen.", a: "Anoniem" },
+  { t: "Familie is het mooiste thuis dat er bestaat. 🏠❤️", a: "Anoniem" },
+  { t: "Jouw gedachten zijn zaden. Plant positieve zaden en kijk wat er groeit!", a: "Anoniem" },
+  { t: "Als je iets moeilijk vindt, betekent dat alleen maar dat je groeit.", a: "Anoniem" },
+  { t: "Vandaag is een goed dag om een geweldige dag te hebben!", a: "Anoniem" },
+  { t: "Wees de reden dat iemand vandaag glimlacht. 😊", a: "Anoniem" },
+  { t: "Succes smaakt het lekkerst als je er hard voor gewerkt hebt.", a: "Anoniem" },
+  { t: "Dromen zijn niet gek — ze zijn de plannen van je toekomst.", a: "Anoniem" },
+  { t: "Jij hebt alles in je om te schitteren. Geloof daarin!", a: "Anoniem" },
+  { t: "Een positieve gedachte in de ochtend verandert je hele dag.", a: "Anoniem" },
+];
 
+let quoteIndex = -1;
+
+function getDagQuote() {
+  const nu = new Date();
+  const dagNr = Math.floor(nu.getTime() / 86400000);
+  return dagNr % QUOTES.length;
+}
+
+function toonQuote(idx) {
+  const q = QUOTES[idx % QUOTES.length];
+  document.getElementById('quote-tekst').textContent = '❝ ' + q.t + ' ❞';
+  document.getElementById('quote-auteur').textContent = '— ' + q.a;
+  quoteIndex = idx;
+}
+
+function volgendeQuote() {
+  toonQuote((quoteIndex + 1) % QUOTES.length);
+}
+
+toonQuote(getDagQuote());
+
+/* ────────────── TAKEN / BOODSCHAPPEN ────────────── */
+let huidigTab = 'taken';
+
+function setTab(tab) {
+  huidigTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', (i===0 && tab==='taken') || (i===1 && tab==='boodschappen'));
+  });
   renderLijst();
+  document.getElementById('taak-input').placeholder = tab==='taken' ? 'Nieuwe taak...' : 'Item toevoegen...';
+}
+
+function getLijst() { return JSON.parse(localStorage.getItem('hub_' + huidigTab) || '[]'); }
+function slaOp(l)   { localStorage.setItem('hub_' + huidigTab, JSON.stringify(l)); }
+
+function renderLijst() {
+  const lijst = getLijst();
+  const el = document.getElementById('taken-lijst');
+  if (!lijst.length) {
+    el.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;text-align:center;padding:20px 0;">Niets op de lijst — lekker rustig! 🎉</p>';
+    return;
+  }
+  el.innerHTML = lijst.map((item,i) => `
+    <div class="taak-item ${item.gedaan?'gedaan':''}">
+      <button class="taak-check ${item.gedaan?'checked':''}" onclick="toggleTaak(${i})">${item.gedaan?'✓':''}</button>
+      <span class="taak-tekst">${escHTML(item.tekst)}</span>
+      <button class="taak-del" onclick="verwijderTaak(${i})">✕</button>
+    </div>`).join('');
+}
+
+function escHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function voegToe() {
+  const inp = document.getElementById('taak-input');
+  const tekst = inp.value.trim();
+  if (!tekst) return;
+  const l = getLijst();
+  l.push({tekst, gedaan:false});
+  slaOp(l); inp.value = ''; renderLijst();
+}
+function toggleTaak(i)   { const l=getLijst(); l[i].gedaan=!l[i].gedaan; slaOp(l); renderLijst(); }
+function verwijderTaak(i){ const l=getLijst(); l.splice(i,1); slaOp(l); renderLijst(); }
+renderLijst();
+
+/* ────────────── PRIKBORD ────────────── */
+const ROTATIES = ['-2deg','1.5deg','-1deg','2.5deg','0deg','-1.5deg','1deg'];
+
+function getPrikbord() { return JSON.parse(localStorage.getItem('hub_prikbord') || '[]'); }
+function slaOpPrikbord(b) { localStorage.setItem('hub_prikbord', JSON.stringify(b)); }
+
+function renderPrikbord() {
+  const berichten = getPrikbord();
+  const grid = document.getElementById('prikbord-grid');
+  if (!berichten.length) {
+    grid.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;padding:10px 0;">Nog geen berichtjes — wees de eerste! 📌</p>';
+    return;
+  }
+  grid.innerHTML = berichten.map((b,i) => `
+    <div class="briefje" style="--rot:${ROTATIES[i % ROTATIES.length]}">
+      <button class="briefje-del" onclick="verwijderBriefje(${i})">✕</button>
+      <div class="briefje-van">${escHTML(b.van)}</div>
+      <div class="briefje-tekst">${escHTML(b.tekst)}</div>
+      <div class="briefje-tijd">${b.tijd}</div>
+    </div>`).join('');
+}
+
+function plaatsBriefje() {
+  const van   = document.getElementById('pb-van').value;
+  const tekst = document.getElementById('pb-tekst').value.trim();
+  if (!tekst) return;
+  const nu  = new Date();
+  const tid = DAGEN[nu.getDay()] + ' ' + nu.getDate() + ' ' + MAANDEN[nu.getMonth()] +
+              ' om ' + String(nu.getHours()).padStart(2,'0') + ':' + String(nu.getMinutes()).padStart(2,'0');
+  const b = getPrikbord();
+  b.unshift({van, tekst, tijd: tid});
+  slaOpPrikbord(b);
+  document.getElementById('pb-tekst').value = '';
+  renderPrikbord();
+}
+
+function verwijderBriefje(i) {
+  const b = getPrikbord();
+  b.splice(i,1);
+  slaOpPrikbord(b);
+  renderPrikbord();
+}
+renderPrikbord();
 </script>
 </body>
 </html>
