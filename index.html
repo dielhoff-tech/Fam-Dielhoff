@@ -223,6 +223,99 @@
     }
     .prikbord-form button:hover { background: var(--accent2); }
 
+    /* VERJAARDAGEN */
+    #verjaardag-card { grid-column: 1 / 2; }
+    .verjaardag-lijst { display: flex; flex-direction: column; gap: 10px; }
+    .verjaardag-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 14px; border-radius: 12px; background: var(--warm1);
+      border: 1.5px solid var(--warm2);
+    }
+    .verjaardag-item.vandaag { background: linear-gradient(135deg,#fff3c4,#ffe082); border-color: #f5c400; }
+    .verjaardag-avatar { font-size: 1.8rem; flex-shrink: 0; }
+    .verjaardag-info { flex: 1; }
+    .verjaardag-naam { font-weight: 800; font-size: 0.95rem; }
+    .verjaardag-datum { font-size: 0.78rem; color: var(--muted); }
+    .verjaardag-badge {
+      font-size: 0.78rem; font-weight: 800; padding: 4px 10px;
+      border-radius: 20px; background: var(--accent); color: #fff; white-space: nowrap;
+    }
+    .verjaardag-badge.vandaag-badge { background: #f5c400; color: #3b2a1a; }
+
+    /* COMPLIMENTENBOARD */
+    #compliment-card { grid-column: 2 / 3; display: flex; flex-direction: column; }
+    .compliment-lijst { flex: 1; overflow-y: auto; max-height: 220px; margin-bottom: 14px; }
+    .compliment-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      background: linear-gradient(135deg,#fff3e0,#ffe0b2);
+      margin-bottom: 8px; border: 1.5px solid var(--warm2);
+    }
+    .compliment-ster { font-size: 1.2rem; flex-shrink: 0; }
+    .compliment-tekst { flex: 1; font-size: 0.88rem; font-weight: 600; line-height: 1.4; }
+    .compliment-van   { font-size: 0.72rem; color: var(--accent2); font-weight: 800; margin-top: 3px; }
+    .compliment-del {
+      background: none; border: none; cursor: pointer; font-size: 0.85rem;
+      color: var(--muted); opacity: 0.4; transition: opacity 0.15s; padding: 2px;
+      flex-shrink: 0;
+    }
+    .compliment-del:hover { opacity: 1; color: var(--accent2); }
+    .compliment-form { display: flex; gap: 8px; flex-wrap: wrap; }
+    .compliment-form select {
+      flex: 0 0 120px; padding: 9px 10px; border-radius: 10px;
+      border: 2px solid var(--warm2); font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem; background: var(--cream); color: var(--text); outline: none;
+    }
+    .compliment-form input {
+      flex: 1; min-width: 140px; padding: 9px 12px; border-radius: 10px;
+      border: 2px solid var(--warm2); font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem; background: var(--cream); color: var(--text); outline: none;
+      transition: border-color 0.2s;
+    }
+    .compliment-form input:focus { border-color: var(--accent); }
+    .compliment-form button {
+      padding: 9px 14px; border-radius: 10px; border: none;
+      background: var(--accent); color: #fff; font-family: 'Nunito', sans-serif;
+      font-weight: 800; font-size: 1rem; cursor: pointer; transition: background 0.2s;
+    }
+    .compliment-form button:hover { background: var(--accent2); }
+
+    /* FILM VAN DE WEEK */
+    #film-card { grid-column: 1 / 2; }
+    .film-poster { font-size: 5rem; text-align: center; margin: 8px 0; }
+    .film-titel  { font-size: 1.15rem; font-weight: 800; text-align: center; margin-bottom: 4px; }
+    .film-jaar   { font-size: 0.82rem; color: var(--muted); text-align: center; margin-bottom: 10px; }
+    .film-beschrijving { font-size: 0.88rem; color: var(--text); line-height: 1.5; }
+    .film-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .film-tag {
+      font-size: 0.75rem; font-weight: 700; padding: 3px 10px;
+      border-radius: 20px; background: var(--warm1); color: var(--muted);
+      border: 1px solid var(--warm2);
+    }
+    .film-nieuw {
+      margin-top: 14px; background: none; border: 2px solid var(--warm2);
+      border-radius: 10px; padding: 7px 14px; cursor: pointer;
+      font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem;
+      color: var(--muted); transition: all 0.2s; display: block; width: 100%;
+    }
+    .film-nieuw:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* FOTOALBUMS */
+    #fotos-card { grid-column: 2 / 3; }
+    .foto-albums { display: flex; flex-direction: column; gap: 12px; }
+    .foto-album-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 18px; border-radius: 14px;
+      background: linear-gradient(135deg,#fce4ec,#f8bbd0);
+      text-decoration: none; color: var(--text);
+      border: 2px solid transparent; transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(180,100,40,0.07);
+    }
+    .foto-album-link:hover { border-color: #e91e8c44; transform: translateY(-2px); box-shadow: 0 5px 16px rgba(180,50,100,0.15); }
+    .foto-album-icon { font-size: 2rem; flex-shrink: 0; }
+    .foto-album-info strong { font-size: 0.95rem; font-weight: 800; display: block; }
+    .foto-album-info span   { font-size: 0.8rem; color: var(--muted); margin-top: 2px; display: block; }
+
     /* ONZE SITES */
     #sites-card { grid-column: 1 / -1; }
     .sites-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -246,7 +339,9 @@
     @media (max-width: 720px) {
       main { grid-template-columns: 1fr; }
       #weer-card, #prognose-card, #weekend-card, #quote-card,
-      #kalender-card, #taken-card, #prikbord-card, #sites-card { grid-column: 1 / -1; }
+      #kalender-card, #taken-card, #prikbord-card,
+      #verjaardag-card, #compliment-card, #film-card, #fotos-card,
+      #sites-card { grid-column: 1 / -1; }
       .sites-grid { grid-template-columns: 1fr; }
       .prognose-rij { grid-template-columns: repeat(5, 1fr); gap: 6px; }
       .prognose-dag { padding: 10px 6px; }
@@ -352,6 +447,68 @@
       </select>
       <textarea id="pb-tekst" placeholder="Schrijf een berichtje..." maxlength="200" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();plaatsBriefje()}"></textarea>
       <button onclick="plaatsBriefje()">📌 Plakken</button>
+    </div>
+  </div>
+
+  <!-- VERJAARDAGEN -->
+  <div class="card" id="verjaardag-card">
+    <div class="card-title">🎂 Verjaardagen</div>
+    <div class="verjaardag-lijst" id="verjaardag-lijst"></div>
+  </div>
+
+  <!-- COMPLIMENTENBOARD -->
+  <div class="card" id="compliment-card">
+    <div class="card-title">🏆 Complimentenboard</div>
+    <div class="compliment-lijst" id="compliment-lijst"></div>
+    <div class="compliment-form">
+      <select id="cp-van">
+        <option value="Papa 👨">Papa</option>
+        <option value="Mama 👩">Mama</option>
+        <option value="Liz 🌸">Liz</option>
+        <option value="Charli ⭐">Charli</option>
+      </select>
+      <input type="text" id="cp-tekst" placeholder="Geef een compliment... 🌟" maxlength="120"
+        onkeydown="if(event.key==='Enter') geefCompliment()" />
+      <button onclick="geefCompliment()">⭐</button>
+    </div>
+  </div>
+
+  <!-- FILM VAN DE WEEK -->
+  <div class="card" id="film-card">
+    <div class="card-title">🎬 Film van de week</div>
+    <div class="film-poster" id="film-poster"></div>
+    <div class="film-titel" id="film-titel"></div>
+    <div class="film-jaar" id="film-jaar"></div>
+    <div class="film-beschrijving" id="film-beschrijving"></div>
+    <div class="film-tags" id="film-tags"></div>
+    <button class="film-nieuw" onclick="nieuweFilm()">🎲 Andere film</button>
+  </div>
+
+  <!-- FOTOALBUMS -->
+  <div class="card" id="fotos-card">
+    <div class="card-title">📸 Onze fotoalbums</div>
+    <div class="foto-albums">
+      <a class="foto-album-link" href="https://photos.app.goo.gl/SuPjiAHqeDzoMR8w5" target="_blank">
+        <span class="foto-album-icon">📷</span>
+        <div class="foto-album-info">
+          <strong>Familiealbum</strong>
+          <span>Onze mooiste herinneringen</span>
+        </div>
+      </a>
+      <a class="foto-album-link" href="https://photos.app.goo.gl/dxoZPGoWx55wPuZf6" target="_blank">
+        <span class="foto-album-icon">🌟</span>
+        <div class="foto-album-info">
+          <strong>Speciale momenten</strong>
+          <span>Feestjes, uitjes en avonturen</span>
+        </div>
+      </a>
+      <a class="foto-album-link" href="https://photos.app.goo.gl/LdwU2zvH7mKLXdEs5" target="_blank">
+        <span class="foto-album-icon">🐰</span>
+        <div class="foto-album-info">
+          <strong>Liz & Charli</strong>
+          <span>Foto's van onze meiden</span>
+        </div>
+      </a>
     </div>
   </div>
 
@@ -635,6 +792,132 @@ function verwijderBriefje(i) {
   renderPrikbord();
 }
 renderPrikbord();
+
+/* ────────────── VERJAARDAGEN ────────────── */
+const VERJAARDAGEN = [
+  { naam: 'Liz',    emoji: '🌸', dag: 24, maand: 12, jaar: 2015 },
+  { naam: 'Charli', emoji: '⭐', dag: 24, maand: 12, jaar: 2015 },
+  { naam: 'Paulien',emoji: '👩', dag:  7, maand:  7, jaar: 1992 },
+  { naam: 'Joeri',  emoji: '👨', dag:  6, maand: 10, jaar: 1986 },
+];
+
+function renderVerjaardagen() {
+  const nu = new Date();
+  const lijst = VERJAARDAGEN.map(p => {
+    let volgende = new Date(nu.getFullYear(), p.maand - 1, p.dag);
+    if (volgende < nu && !(volgende.toDateString() === nu.toDateString())) {
+      volgende = new Date(nu.getFullYear() + 1, p.maand - 1, p.dag);
+    }
+    const diffMs   = volgende - nu;
+    const diffDagen = Math.ceil(diffMs / 86400000);
+    const isVandaag = volgende.toDateString() === nu.toDateString();
+    const leeftijd  = volgende.getFullYear() - p.jaar;
+    return { ...p, diffDagen, isVandaag, leeftijd, volgende };
+  }).sort((a, b) => a.diffDagen - b.diffDagen);
+
+  const el = document.getElementById('verjaardag-lijst');
+  el.innerHTML = lijst.map(p => {
+    const badge = p.isVandaag
+      ? `<span class="verjaardag-badge vandaag-badge">🎉 Vandaag!</span>`
+      : `<span class="verjaardag-badge">nog ${p.diffDagen} dag${p.diffDagen === 1 ? '' : 'en'}</span>`;
+    const datumStr = p.dag + ' ' + MAANDEN[p.maand - 1];
+    return `
+      <div class="verjaardag-item ${p.isVandaag ? 'vandaag' : ''}">
+        <div class="verjaardag-avatar">${p.emoji}</div>
+        <div class="verjaardag-info">
+          <div class="verjaardag-naam">${p.naam} wordt ${p.leeftijd}!</div>
+          <div class="verjaardag-datum">📅 ${datumStr}</div>
+        </div>
+        ${badge}
+      </div>`;
+  }).join('');
+}
+renderVerjaardagen();
+
+/* ────────────── COMPLIMENTENBOARD ────────────── */
+const STERREN = ['⭐','🌟','✨','💫','🏆','🎉','💪','👏','🥇','❤️'];
+
+function getComplimenten() { return JSON.parse(localStorage.getItem('hub_complimenten') || '[]'); }
+function slaOpComplimenten(c) { localStorage.setItem('hub_complimenten', JSON.stringify(c)); }
+
+function renderComplimenten() {
+  const lijst = getComplimenten();
+  const el = document.getElementById('compliment-lijst');
+  if (!lijst.length) {
+    el.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;text-align:center;padding:16px 0;">Geef het eerste compliment! 🌟</p>';
+    return;
+  }
+  el.innerHTML = lijst.map((c, i) => `
+    <div class="compliment-item">
+      <span class="compliment-ster">${STERREN[i % STERREN.length]}</span>
+      <div style="flex:1">
+        <div class="compliment-tekst">${escHTML(c.tekst)}</div>
+        <div class="compliment-van">— ${escHTML(c.van)}</div>
+      </div>
+      <button class="compliment-del" onclick="verwijderCompliment(${i})">✕</button>
+    </div>`).join('');
+}
+
+function geefCompliment() {
+  const van   = document.getElementById('cp-van').value;
+  const tekst = document.getElementById('cp-tekst').value.trim();
+  if (!tekst) return;
+  const lijst = getComplimenten();
+  lijst.unshift({ van, tekst });
+  slaOpComplimenten(lijst);
+  document.getElementById('cp-tekst').value = '';
+  renderComplimenten();
+}
+
+function verwijderCompliment(i) {
+  const lijst = getComplimenten();
+  lijst.splice(i, 1);
+  slaOpComplimenten(lijst);
+  renderComplimenten();
+}
+renderComplimenten();
+
+/* ────────────── FILM VAN DE WEEK ────────────── */
+const FILMS = [
+  { titel:'The Lion King', jaar:'1994', poster:'🦁', tags:['Animatie','Familie','Avontuur'], beschrijving:'Simba moet zijn rechtmatige plek als koning van de Pride Lands innemen. Een tijdloze klassieker over moed, vriendschap en thuiskomen.' },
+  { titel:'Coco', jaar:'2017', poster:'💀🎸', tags:['Animatie','Muziek','Familie'], beschrijving:'Miguel droomt van muziek en belandt op magische wijze in het Dodenrijk. Een ontroerend verhaal over familie en herinneringen.' },
+  { titel:'Ratatouille', jaar:'2007', poster:'🐭🍽️', tags:['Animatie','Komedie','Familie'], beschrijving:'Een rat die chef-kok wil worden in Parijs. Grappig, slim en voor alle leeftijden geweldig.' },
+  { titel:'Matilda', jaar:'1996', poster:'📚✨', tags:['Komedie','Avontuur','Familie'], beschrijving:'Het slimme meisje Matilda ontdekt bijzondere krachten. Een vrolijk verhaal over boeken, moed en geloven in jezelf.' },
+  { titel:'Home Alone', jaar:'1990', poster:'🏠😱', tags:['Komedie','Familie','Feest'], beschrijving:'Kevin wordt per ongeluk thuis achtergelaten en moet zijn huis verdedigen. Een klassieker voor het hele gezin!' },
+  { titel:'Paddington', jaar:'2014', poster:'🐻🎩', tags:['Komedie','Avontuur','Familie'], beschrijving:'Een vriendelijke beer uit Peru zoekt een thuis in Londen. Warm, grappig en heerlijk voor jong en oud.' },
+  { titel:'Inside Out', jaar:'2015', poster:'🎭😊', tags:['Animatie','Familie','Emotie'], beschrijving:'Reis mee met de emoties in het hoofd van Riley. Leer alles over gevoelens op een grappige en slimme manier.' },
+  { titel:'Encanto', jaar:'2021', poster:'🏡🌺', tags:['Animatie','Muziek','Familie'], beschrijving:'De familie Madrigal heeft bijzondere gaven — behalve Mirabel. Een vrolijk, kleurrijk muziekavontuur over familie.' },
+  { titel:'Monsters, Inc.', jaar:'2001', poster:'👾💙', tags:['Animatie','Komedie','Familie'], beschrijving:'Monsters genereren energie door kinderen te laten schrikken — totdat er een meisje in hun wereld terechtkomt.' },
+  { titel:'Sing', jaar:'2016', poster:'🎤🐧', tags:['Animatie','Muziek','Komedie'], beschrijving:'Dieren dromen van muzikaal succes in een grote zangwedstrijd. Aanstekelijke muziek voor het hele gezin!' },
+  { titel:'Moana', jaar:'2016', poster:'🌊⚓', tags:['Animatie','Avontuur','Muziek'], beschrijving:'De dochter van een eilandhoofdman zeilt de oceaan op om haar volk te redden. Episch en prachtig!' },
+  { titel:'Shrek', jaar:'2001', poster:'🟢👹', tags:['Animatie','Komedie','Familie'], beschrijving:'Een eigenwijze ogre en zijn praatgraag ezeltje redden een prinses. Grappig voor kinderen én volwassenen.' },
+  { titel:'The Incredibles', jaar:'2004', poster:'🦸‍♂️🦸‍♀️', tags:['Animatie','Actie','Familie'], beschrijving:'Een familie van superhelden probeert normaal te leven — maar het avontuur wacht. Spannend en grappig!' },
+  { titel:'Finding Nemo', jaar:'2003', poster:'🐠🌊', tags:['Animatie','Avontuur','Familie'], beschrijving:'Een vader zwemt de halve oceaan over om zijn zoontje Nemo terug te vinden. Prachtig en ontroerend.' },
+];
+
+let filmIndex = -1;
+
+function getWeekFilm() {
+  const nu   = new Date();
+  const week = Math.floor(nu.getTime() / (7 * 86400000));
+  return week % FILMS.length;
+}
+
+function toonFilm(idx) {
+  const f = FILMS[idx % FILMS.length];
+  document.getElementById('film-poster').textContent      = f.poster;
+  document.getElementById('film-titel').textContent       = f.titel;
+  document.getElementById('film-jaar').textContent        = f.jaar;
+  document.getElementById('film-beschrijving').textContent = f.beschrijving;
+  document.getElementById('film-tags').innerHTML          = f.tags.map(t => `<span class="film-tag">${t}</span>`).join('');
+  filmIndex = idx;
+}
+
+function nieuweFilm() {
+  toonFilm((filmIndex + 1) % FILMS.length);
+}
+
+toonFilm(getWeekFilm());
 </script>
 </body>
 </html>
