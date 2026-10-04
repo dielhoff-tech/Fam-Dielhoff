@@ -332,6 +332,17 @@
     .site-info strong { font-size: 1rem; font-weight: 800; display: block; }
     .site-info span   { font-size: 0.82rem; color: var(--muted); margin-top: 2px; display: block; }
 
+    /* VERBOUWING */
+    #verbouwing-card { grid-column: 1 / -1; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .vb-getal { font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .vb-links { flex: 0 0 auto; text-align: center; min-width: 140px; }
+    .vb-links p { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+    .vb-mijlpalen { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; }
+    .vb-mp { display: flex; justify-content: space-between; gap: 12px; font-size: 0.92rem; padding: 6px 10px; border-radius: 10px; background: var(--warm1); }
+    .vb-mp.voorbij { opacity: 0.5; text-decoration: line-through; }
+    .vb-mp.volgende { background: var(--warm2); font-weight: 800; }
+    .vb-knop { flex: 0 0 auto; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; text-decoration: none; font-weight: 800; padding: 14px 22px; border-radius: 14px; box-shadow: 0 4px 14px rgba(200,80,40,0.25); }
+
     /* FOOTER */
     footer { text-align: center; padding: 20px; font-size: 0.8rem; color: var(--muted); }
 
@@ -341,7 +352,8 @@
       #weer-card, #prognose-card, #weekend-card, #quote-card,
       #kalender-card, #taken-card, #prikbord-card,
       #verjaardag-card, #compliment-card, #film-card, #fotos-card,
-      #sites-card { grid-column: 1 / -1; }
+      #sites-card, #verbouwing-card { grid-column: 1 / -1; }
+      .vb-knop { width: 100%; text-align: center; }
       .sites-grid { grid-template-columns: 1fr; }
       .prognose-rij { grid-template-columns: repeat(5, 1fr); gap: 6px; }
       .prognose-dag { padding: 10px 6px; }
@@ -389,6 +401,17 @@
     <div class="prognose-rij" id="prognose-rij">
       <div class="prognose-dag"><div class="dag-naam">–</div><div class="dag-icon">…</div><div class="dag-max">–</div><div class="dag-min">–</div></div>
     </div>
+  </div>
+
+  <!-- VERBOUWING MESDAGLAAN -->
+  <div class="card" id="verbouwing-card">
+    <div class="vb-links">
+      <div class="card-title" style="justify-content:center">🔨 Verbouwing Mesdaglaan</div>
+      <div class="vb-getal" id="vb-getal">–</div>
+      <p id="vb-label">dagen tot de verhuizing</p>
+    </div>
+    <div class="vb-mijlpalen" id="vb-mijlpalen"></div>
+    <a class="vb-knop" href="verbouwing.html">Open de planning →</a>
   </div>
 
   <!-- WEEKEND COUNTDOWN -->
@@ -621,6 +644,30 @@ async function laadWeer() {
   }
 }
 laadWeer();
+
+/* ────────────── VERBOUWING MESDAGLAAN ────────────── */
+const VB_MIJLPALEN = [
+  { titel: 'Badkamer slopen',           datum: '2026-10-07' },
+  { titel: 'Dakkapel plaatsen',         datum: '2026-10-12' },
+  { titel: 'Start verbouwing badkamer', datum: '2026-10-13' },
+  { titel: 'Badkamer klaar',            datum: '2026-10-27' },
+  { titel: 'Verhuizen! 🏠',             datum: '2026-11-21' },
+];
+
+function renderVerbouwing() {
+  const vandaag = new Date(); vandaag.setHours(12,0,0,0);
+  const d = s => new Date(s + 'T12:00:00');
+  const dagen = Math.round((d('2026-11-21') - vandaag) / 86400000);
+  document.getElementById('vb-getal').textContent = dagen > 0 ? dagen : '🎉';
+  document.getElementById('vb-label').textContent = dagen > 0 ? (dagen === 1 ? 'dag tot de verhuizing' : 'dagen tot de verhuizing') : 'We wonen aan de Mesdaglaan!';
+  const volgende = VB_MIJLPALEN.find(m => d(m.datum) >= vandaag);
+  document.getElementById('vb-mijlpalen').innerHTML = VB_MIJLPALEN.map(m => {
+    const dt = d(m.datum);
+    const cls = dt < vandaag ? 'voorbij' : m === volgende ? 'volgende' : '';
+    return `<div class="vb-mp ${cls}"><span>${m.titel}</span><span>${DAGEN_K[dt.getDay()]} ${dt.getDate()} ${MAANDEN[dt.getMonth()].slice(0,3)}</span></div>`;
+  }).join('');
+}
+renderVerbouwing();
 
 /* ────────────── WEEKEND AFTELLER ────────────── */
 function updateWeekend() {

@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f4e5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Mesdaglaan Verbouwing</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#f5f3ee;--card:#fff;--ink:#1d2a30;--mut:#6b777d;--line:#e4e0d6;
+  --brand:#1f4e5f;--brand-ink:#fff;--accent:#e08a2c;--ok:#2e8b57;--bad:#c0392b;--warn:#d98a00;--info:#3b6fb6;
+  --chip:#eceae2;--shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#12181b;--card:#1b2428;--ink:#e8eef0;--mut:#93a1a8;--line:#2b373c;--brand:#3d8ba5;--brand-ink:#fff;
+  --chip:#26323a;--shadow:0 1px 2px rgba(0,0,0,.4);
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:20;background:var(--brand);color:var(--brand-ink);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px}
+header h1{font-size:18px;margin:0;flex:1;font-weight:700}
+header .sync{font-size:12px;opacity:.85}
+header button{background:rgba(255,255,255,.16);color:inherit;border:0;border-radius:10px;padding:7px 10px;font-size:16px;cursor:pointer}
+main{max-width:980px;margin:0 auto;padding:14px 16px}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:9px 2px 8px;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button b{font-size:19px;line-height:1;font-weight:400}
+nav button.on{color:var(--brand);font-weight:700}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:22px 0 8px;display:flex;justify-content:space-between;align-items:baseline}
+h2 small{text-transform:none;letter-spacing:0;font-size:12px}
+.card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px}
+.hero{background:linear-gradient(135deg,var(--brand),#2b6b82);color:#fff;border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+.hero .big{font-size:40px;font-weight:800;line-height:1}
+.hero .sub{opacity:.85;font-size:14px;margin-top:4px}
+.hero .row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.bar{height:8px;background:var(--chip);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok);border-radius:6px;transition:width .3s}
+.hero .bar{background:rgba(255,255,255,.25);margin-top:14px}.hero .bar>i{background:#7ee0a8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.stat{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+.stat .n{font-size:22px;font-weight:700}.stat .l{font-size:12px;color:var(--mut)}
+.task{display:flex;gap:12px;align-items:flex-start;background:var(--card);border-radius:12px;padding:11px 12px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer}
+.task.klaar .t{text-decoration:line-through;color:var(--mut)}
+.chk{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:none;cursor:pointer;display:grid;place-items:center;color:#fff;font-size:15px;padding:0;margin-top:1px}
+.klaar .chk{background:var(--ok);border-color:var(--ok)}
+.bezig .chk{border-color:var(--info);background:linear-gradient(90deg,var(--info) 50%,transparent 50%)}
+.task .t{font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.chip{font-size:12px;background:var(--chip);color:var(--ink);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.chip.late{background:#fde4e0;color:var(--bad)}.chip.today{background:#fff0d6;color:#a86400}
+.chip.voorstel{background:#e6eefb;color:var(--info)}.chip.wacht{background:#fff0d6;color:#a86400}
+@media (prefers-color-scheme:dark){.chip.late{background:#4a2420}.chip.today{background:#4a3a14}.chip.voorstel{background:#1f3350}.chip.wacht{background:#4a3a14}}
+.room{cursor:pointer;display:flex;flex-direction:column;gap:8px;padding:0;overflow:hidden}
+.room .ph{height:84px;background:var(--chip) center/cover;display:grid;place-items:center;color:var(--mut);font-size:12px}
+.room .in{padding:2px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.room .nm{font-weight:700}.room .pc{font-size:12px;color:var(--mut);display:flex;justify-content:space-between}
+.fab{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:19;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:30px;box-shadow:0 6px 18px rgba(0,0,0,.3);cursor:pointer}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filters button,.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer}
+.filters button.on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.btn{border-radius:10px;font-size:15px;padding:10px 14px}
+.btn.pri{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);font-weight:600}
+.btn.del{color:var(--bad)}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+textarea{min-height:80px;resize:vertical}
+label{display:block;font-size:12px;color:var(--mut);margin:10px 0 3px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
+#modal.on{display:flex}
+#modal .sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+@media (min-width:700px){#modal{align-items:center}#modal .sheet{border-radius:18px}}
+.sheet h3{margin:0 0 4px;font-size:18px}
+.actions{display:flex;gap:8px;margin-top:16px;justify-content:space-between}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:11px;text-transform:uppercase;color:var(--mut);text-align:right;padding:6px 8px;font-weight:600}
+td{padding:9px 8px;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+tr.clk{cursor:pointer}
+.neg{color:var(--bad);font-weight:600}.pos{color:var(--ok)}
+.alert{background:#fff0d6;color:#8a5200;border-radius:12px;padding:12px;font-size:14px;margin-top:12px}
+@media (prefers-color-scheme:dark){.alert{background:#4a3a14;color:#f3c777}}
+.tl{overflow-x:auto;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:10px 0 10px 0}
+.tlin{position:relative;min-width:max-content}
+.tlh{display:flex;height:26px;position:sticky;top:0}
+.tlh div{flex:none;border-left:1px solid var(--line);font-size:11px;color:var(--mut);padding-left:4px}
+.tlr{position:relative;height:30px;border-top:1px solid var(--line)}
+.tlb{position:absolute;top:5px;height:20px;border-radius:6px;background:var(--info);color:#fff;font-size:11px;line-height:20px;padding:0 6px;overflow:hidden;white-space:nowrap;cursor:pointer;min-width:8px}
+.tlb.aannemer{background:#8b5fbf}.tlb.klaar{background:var(--ok)}.tlb.late{background:var(--bad)}
+.tlv{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);z-index:2}
+.tlv.vandaag{background:var(--bad)}
+.tlv span{position:absolute;top:30px;left:4px;font-size:10px;writing-mode:vertical-rl;white-space:nowrap;color:var(--accent);font-weight:700;background:var(--card);padding:2px 0}
+.tll{position:absolute;top:7px;font-size:12px;white-space:nowrap;color:var(--ink);pointer-events:none}
+.tlb{padding:0}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.photos .p{aspect-ratio:1;background:var(--chip) center/cover;border-radius:10px;position:relative;cursor:pointer}
+.photos .p span{position:absolute;left:4px;bottom:4px;font-size:10px;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;padding:1px 6px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmp div{aspect-ratio:3/4;background:var(--chip) center/cover;border-radius:12px;position:relative;display:grid;place-items:center;color:var(--mut);font-size:13px}
+.cmp div b{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;padding:1px 8px;font-size:11px}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:60;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:12px}
+#lb.on{display:flex}#lb img{max-width:100%;max-height:78vh;border-radius:8px}#lb p{color:#fff;margin:0}
+.login{max-width:380px;margin:12vh auto 0}
+.back{background:none;border:0;color:var(--brand);font-size:15px;padding:0 0 8px;cursor:pointer}
+.muted{color:var(--mut);font-size:13px}
+.empty{text-align:center;color:var(--mut);padding:26px 0}
+</style>
+</head>
+<body>
+<header>
+  <a href="./" aria-label="Terug naar Familie Dielhoff" style="color:inherit;text-decoration:none;font-size:22px;padding-right:2px">‹</a>
+  <h1>🔨 Verbouwing Mesdaglaan</h1>
+  <span class="sync" id="sync"></span>
+  <button data-act="settings" aria-label="Instellingen">⚙︎</button>
+</header>
+<main id="view"></main>
+<button class="fab" data-act="newTask" aria-label="Nieuwe taak">+</button>
+<nav id="nav"></nav>
+<div id="modal"><div class="sheet" id="sheet"></div></div>
+<div id="lb"><img id="lbimg" alt=""><p id="lbcap"></p></div>
+
+<script>
+/* ================= Configuratie ================= */
+const SUPABASE_URL = 'https://qrndyaybzahdcnwryanh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_JAqmzTx1tfhwmrOAFrZSeg_R2b8vFqX';
+const VERHUIS = '2026-11-21';
+
+/* ================= Hulpfuncties ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DAG = ['zo','ma','di','wo','do','vr','za'], MAAND = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const iso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const dt = s => new Date(s + 'T12:00:00');
+const addD = (s,n) => { const d = dt(s); d.setDate(d.getDate()+n); return iso(d); };
+const diff = (a,b) => Math.round((dt(b)-dt(a))/864e5);
+const TODAY = (new URLSearchParams(location.search).get('vandaag')) || iso(new Date());
+const fd = s => { if(!s) return ''; const d = dt(s); return `${DAG[d.getDay()]} ${d.getDate()} ${MAAND[d.getMonth()]}` + (d.getFullYear()!==dt(TODAY).getFullYear() ? ' ' + d.getFullYear() : ''); };
+const eur = n => (n==null||n==='') ? '–' : new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+const num = v => { if(v===''||v==null) return null; const n = parseFloat(String(v).replace(/\./g,'').replace(',','.')); return isNaN(n) ? null : n; };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const WIE = {aannemer:'Aannemer', joeri:'Joeri', paulien:'Paulien', samen:'Samen', meiden:'Meiden'};
+const BRON = {bouwdepot:'bouwdepot',overwaarde:'overwaarde',eigen:'eigen geld'};
+const STATUS = {todo:'Te doen', bezig:'Bezig', wacht:'Wacht op…', klaar:'Klaar'};
+
+/* ================= Data-opslag (lokaal + Supabase) ================= */
+const LS = 'mesdaglaan_dashboard_v1', LSP = LS + '_pending';
+let S = { items: {} }, pending = {}, sb = null, user = null, online = false, localOnly = false, rt = null;
+try { S.items = JSON.parse(localStorage.getItem(LS) || '{}'); pending = JSON.parse(localStorage.getItem(LSP) || '{}'); } catch(e){}
+const persist = () => { try { localStorage.setItem(LS, JSON.stringify(S.items)); localStorage.setItem(LSP, JSON.stringify(pending)); } catch(e){} };
+const K = (soort,id) => soort + ':' + id;
+const list = soort => Object.values(S.items).filter(i => i.soort === soort).map(i => ({...i.data, id:i.id}));
+const get = (soort,id) => { const i = S.items[K(soort,id)]; return i ? {...i.data, id} : null; };
+function save(soort, id, data){
+  const {id:_, ...d} = data;
+  S.items[K(soort,id)] = { soort, id, data:d, bijgewerkt:new Date().toISOString() };
+  pending[K(soort,id)] = 1; persist(); flush(); render();
+}
+function remove(soort,id){ delete S.items[K(soort,id)]; pending[K(soort,id)] = 1; persist(); flush(); render(); }
+
+let flushing = false;
+async function flush(){
+  if(!sb || !user || flushing) return; flushing = true; setSync('Opslaan…');
+  try{
+    for(const k of Object.keys(pending)){
+      const it = S.items[k], [soort,...r] = k.split(':'), id = r.join(':');
+      const res = it
+        ? await sb.from('items').upsert({soort, id, data:it.data, bijgewerkt:it.bijgewerkt, door:user.email})
+        : await sb.from('items').delete().eq('soort',soort).eq('id',id);
+      if(res.error) throw res.error;
+      delete pending[k];
+    }
+    persist(); online = true; setSync('✓ Opgeslagen');
+  }catch(e){ online = false; setSync('⚠ Niet gesynchroniseerd'); console.warn(e); }
+  flushing = false;
+}
+function setSync(t){ $('#sync').textContent = t; }
+
+async function loadRemote(){
+  const {data, error} = await sb.from('items').select('*');
+  if(error) throw error;
+  if(!data.length){
+    if(!Object.keys(S.items).length) seed();
+    for(const k in S.items) pending[k] = 1;
+  } else {
+    const remote = {};
+    data.forEach(r => remote[K(r.soort,r.id)] = r);
+    for(const k in remote) if(!pending[k]) S.items[k] = {soort:remote[k].soort, id:remote[k].id, data:remote[k].data, bijgewerkt:remote[k].bijgewerkt};
+    for(const k in S.items) if(!remote[k] && !pending[k]) delete S.items[k];
+  }
+  persist(); await flush(); render();
+}
+function subscribe(){
+  if(rt) return;
+  rt = sb.channel('items-live').on('postgres_changes', {event:'*', schema:'public', table:'items'}, p => {
+    const r = p.new && p.new.id ? p.new : p.old; if(!r) return;
+    const k = K(r.soort, r.id); if(pending[k]) return;
+    if(p.eventType === 'DELETE') delete S.items[k];
+    else S.items[k] = {soort:r.soort, id:r.id, data:r.data, bijgewerkt:r.bijgewerkt};
+    persist(); render();
+  }).subscribe();
+}
+
+/* ================= Seed-data ================= */
+function seed(){
+  const put = (soort,id,data) => { S.items[K(soort,id)] = {soort,id,data,bijgewerkt:new Date().toISOString()}; };
+  [['bg_kamer1','Werkkamer (tuin)','Begane grond'],['bg_keuken','Keuken','Begane grond'],['bg_was','Wasruimte','Begane grond'],['bg_kamer2','Kamer (straat)','Begane grond'],
+   ['bg_hal','Entree / hal','Begane grond'],['bg_wc','WC','Begane grond'],['bg_woon','Woonkamer','Begane grond'],
+   ['v1_slk1','Slaapkamer 1','1e verdieping'],['v1_slk2','Slaapkamer 2','1e verdieping'],['v1_slk3','Slaapkamer 3','1e verdieping'],['v1_slk4','Slaapkamer 4','1e verdieping'],
+   ['v1_bad','Badkamer','1e verdieping'],['v1_over','Overloop','1e verdieping'],['v1_kast','Kast','1e verdieping'],
+   ['v2_over','Zolder overloop','Zolder'],['v2_slk5','Slaapkamer 5','Zolder'],
+   ['sch_schuur','Schuur','Buiten'],['tuin','Tuin','Buiten']
+  ].forEach(([id,naam,verdieping],i) => put('kamer',id,{naam,verdieping,volgorde:i}));
+
+  [['m_sloop','Badkamer slopen','2026-10-07'],['m_dak','Dakkapel plaatsen','2026-10-12'],['m_bad','Start verbouwing badkamer','2026-10-13'],['m_verhuis','Verhuizen naar Mesdaglaan',VERHUIS]]
+    .forEach(([id,titel,datum]) => put('mijlpaal',id,{titel,datum}));
+
+  [['p_eerste','Eerste kosten badkamer',2300,'2026-09-30','eigen','Badkamer'],
+   ['p_badkamer','Badkamer (materiaal)',13117.93,'2026-10-07','bouwdepot','Badkamer'],
+   ['p_plaats','Plaatsing badkamer',9200,'2026-10-07','bouwdepot','Badkamer'],
+   ['p_dakkapel','Dakkapel',6750,'2026-10-12','overwaarde','Dakkapel'],
+   ['p_verf','Verf',1000,'2026-10-15','eigen','Zelf doen'],
+   ['p_liz','Slaapkamer Liz',1000,'2026-10-15','eigen','Zelf doen'],
+   ['p_charli','Slaapkamer Charli',1000,'2026-10-15','eigen','Zelf doen'],
+   ['p_pj','Slaapkamer P&J',3000,'2026-10-15','eigen','Zelf doen'],
+   ['p_vloer','Vloertje werkkamer',500,'2026-10-15','eigen','Zelf doen'],
+   ['p_elis','Elis aandelen',5037,'2026-10-30','eigen','Overig (geen verbouw)'],
+   ['p_buffer','Onvoorzien / buffer',4000,'2026-11-30','eigen','Buffer'],
+   ['p_tuin','Tuin',0,'2027-03-01','eigen','Zelf doen']
+  ].forEach(([id,naam,begroot,datum,bron,groep]) => put('post',id,{naam,begroot,datum,bron,groep,werkelijk:null,betaald:false}));
+
+  const t = (id,d) => put('taak',id,{status:'todo',wie:'samen',kamer:null,start:'',deadline:'',schatting:null,post:'',notitie:'',voorstel:false,...d});
+  t('t_sloop',{titel:'Badkamer slopen',wie:'aannemer',kamer:'v1_bad',start:'2026-10-07',deadline:'2026-10-07',post:'p_plaats'});
+  t('t_dak',{titel:'Dakkapel plaatsen',wie:'aannemer',kamer:'v1_bad',start:'2026-10-12',deadline:'2026-10-12',post:'p_dakkapel',notitie:'Noordzijde, 50 cm vrij van erfgrens en dakrand.'});
+  t('t_bad',{titel:'Badkamer verbouwen (±10 werkdagen)',wie:'aannemer',kamer:'v1_bad',start:'2026-10-13',deadline:'2026-10-27',post:'p_plaats',notitie:'Start 13 of 14 okt. Deadline is de laatste mogelijke dag bij start op 14 okt.'});
+  t('t_lever',{titel:'Badkamermaterialen geleverd en gecontroleerd',kamer:'v1_bad',wie:'joeri',deadline:'2026-10-06',post:'p_badkamer',voorstel:true,notitie:'Controleren op compleetheid en schade vóór de sloop/start, anders loopt de aannemer vast.'});
+  t('t_opl_dak',{titel:'Oplevering dakkapel: controleren en restpunten noteren',kamer:'v1_bad',wie:'samen',deadline:'2026-10-16',voorstel:true});
+  t('t_opl_bad',{titel:'Oplevering badkamer: controleren en restpunten noteren',kamer:'v1_bad',wie:'samen',deadline:'2026-10-28',voorstel:true});
+  t('t_depot',{titel:'Facturen indienen bij het bouwdepot',wie:'joeri',deadline:'2026-10-30',voorstel:true,notitie:'Het bouwdepot betaalt pas uit op factuur/voortgang. Check bij de bank hoe vaak dat kan.'});
+  t('t_verf',{titel:'Verf kopen en verven',start:'2026-10-15',deadline:'2026-11-20',post:'p_verf',notitie:'Deadline = voor de verhuizing. Aanpassen na het rondje door het huis.'});
+  t('t_liz',{titel:'Slaapkamer Liz',kamer:'v1_slk3',start:'2026-10-15',deadline:'2026-11-20',wie:'meiden',post:'p_liz',notitie:'Achterzijde, rechts (gezien vanaf de voordeur).'});
+  t('t_charli',{titel:'Slaapkamer Charli',kamer:'v2_slk5',start:'2026-10-15',deadline:'2026-11-20',wie:'meiden',post:'p_charli',notitie:'Zolder.'});
+  t('t_pj',{titel:'Slaapkamer P&J',kamer:'v1_slk4',start:'2026-10-15',deadline:'2026-11-20',post:'p_pj',notitie:'Voorzijde, rechts (gezien vanaf de voordeur).'});
+  t('t_vloer',{titel:'Vloertje werkkamer',start:'2026-10-15',deadline:'2026-11-20',kamer:'bg_kamer1',post:'p_vloer',notitie:'Beneden links achter, tegen de tuin aan.'});
+  t('t_verhuis',{titel:'Verhuizing regelen (bus/verhuizers, hulp)',wie:'samen',deadline:'2026-11-07',voorstel:true});
+  t('t_tuin',{titel:'Tuin aanpakken',deadline:'2027-03-01',post:'p_tuin',notitie:'Na de verhuizing.'});
+  persist();
+}
+
+/* ================= Afgeleide gegevens ================= */
+const kamers = () => list('kamer').sort((a,b) => a.volgorde - b.volgorde);
+const kamerNaam = id => (get('kamer',id)||{}).naam || 'Algemeen';
+const taken = () => list('taak');
+const dd = t => t.deadline || t.start || '';
+const weight = t => t.status==='klaar' ? 1 : t.status==='bezig' ? .5 : 0;
+const pct = ts => ts.length ? Math.round(100*ts.reduce((s,t)=>s+weight(t),0)/ts.length) : 0;
+const bySort = (a,b) => (dd(a)||'9').localeCompare(dd(b)||'9') || a.titel.localeCompare(b.titel);
+const isOpen = t => t.status !== 'klaar';
+const isLate = t => isOpen(t) && dd(t) && dd(t) < TODAY;
+
+/* ================= Weergaven ================= */
+let tab = 'vandaag', roomId = null, filt = {status:'open', wie:'', kamer:''};
+const TABS = [['vandaag','◉','Vandaag'],['kamers','▦','Kamers'],['taken','☰','Taken'],['planning','▤','Planning'],['budget','€','Budget']];
+
+function render(){
+  $('#nav').innerHTML = TABS.map(([k,i,l]) => `<button class="${tab===k?'on':''}" data-act="tab" data-v="${k}"><b>${i}</b>${l}</button>`).join('');
+  const v = $('#view');
+  v.innerHTML = (roomId ? vKamer() : {vandaag:vVandaag,kamers:vKamers,taken:vTaken,planning:vPlanning,budget:vBudget}[tab]());
+  $('.fab').style.display = (tab==='budget' && !roomId) ? 'none' : '';
+}
+
+function taskCard(t){
+  const late = isLate(t), isToday = dd(t) === TODAY && isOpen(t);
+  const datum = t.start && t.deadline && t.start !== t.deadline ? `${fd(t.start)} → ${fd(t.deadline)}` : fd(dd(t));
+  return `<div class="task ${t.status}" data-act="editTask" data-id="${t.id}">
+    <button class="chk" data-act="toggle" data-id="${t.id}" aria-label="Afvinken">${t.status==='klaar'?'✓':''}</button>
+    <div style="min-width:0;flex:1"><div class="t">${esc(t.titel)}</div>
+    <div class="meta">
+      ${datum ? `<span class="chip ${late?'late':isToday?'today':''}">${late?'Te laat · ':isToday?'Vandaag · ':''}${datum}</span>` : '<span class="chip">Geen datum</span>'}
+      ${t.kamer ? `<span class="chip">${esc(kamerNaam(t.kamer))}</span>` : ''}
+      <span class="chip">${WIE[t.wie]||''}</span>
+      ${t.status==='wacht'?'<span class="chip wacht">Wacht op…</span>':''}
+      ${t.voorstel?'<span class="chip voorstel">Voorstel</span>':''}
+      ${t.schatting?`<span class="chip">${eur(t.schatting)}</span>`:''}
+    </div></div></div>`;
+}
+const section = (titel, ts, extra='') => ts.length ? `<h2>${titel}<small>${extra||ts.length}</small></h2>${ts.map(taskCard).join('')}` : '';
+
+function vVandaag(){
+  const all = taken(), open = all.filter(isOpen);
+  const dagen = diff(TODAY, VERHUIS), tot = pct(all);
+  const sunday = addD(TODAY, ((7 - dt(TODAY).getDay()) % 7) || 7);
+  const act = t => isOpen(t) && t.start && t.deadline && t.start <= TODAY && TODAY <= t.deadline;
+  const late = open.filter(isLate).sort(bySort);
+  const vandaag = open.filter(t => !isLate(t) && (dd(t) === TODAY || act(t))).sort(bySort);
+  const week = open.filter(t => !vandaag.includes(t) && !late.includes(t) && dd(t) > TODAY && dd(t) <= sunday).sort(bySort);
+  const straks = open.filter(t => dd(t) > sunday && dd(t) <= addD(TODAY,21) && !vandaag.includes(t)).sort(bySort);
+  const zonder = open.filter(t => !dd(t));
+  const wacht = open.filter(t => t.status==='wacht' && !late.includes(t) && !vandaag.includes(t) && !week.includes(t));
+  const mijl = list('mijlpaal').filter(m => m.datum >= TODAY).sort((a,b)=>a.datum.localeCompare(b.datum))[0];
+  const posten = list('post').filter(p => p.groep !== 'Overig (geen verbouw)'), begroot = posten.reduce((s,p)=>s+(p.begroot||0),0);
+  const uit = posten.reduce((s,p)=>s+(p.werkelijk||0),0);
+  return `<div class="hero"><div class="row"><div><div class="big">${dagen>0?dagen:0}</div><div class="sub">dagen tot de verhuizing (${fd(VERHUIS)})</div></div>
+    <div style="text-align:right"><div class="big" style="font-size:30px">${tot}%</div><div class="sub">${all.filter(t=>t.status==='klaar').length} van ${all.length} taken klaar</div></div></div>
+    <div class="bar"><i style="width:${tot}%"></i></div>
+    ${mijl ? `<div class="sub" style="margin-top:10px">Eerstvolgende mijlpaal: <b>${esc(mijl.titel)}</b> · ${fd(mijl.datum)}${diff(TODAY,mijl.datum)>=0?` (over ${diff(TODAY,mijl.datum)} d)`:''}</div>`:''}</div>
+    <div class="stats">
+      <div class="stat"><div class="n ${late.length?'neg':''}">${late.length}</div><div class="l">te laat</div></div>
+      <div class="stat"><div class="n">${vandaag.length + week.length}</div><div class="l">vandaag + deze week</div></div>
+      <div class="stat"><div class="n">${eur(begroot)}</div><div class="l">begroot · ${eur(uit)} uitgegeven</div></div></div>
+    ${section('Te laat', late)}${section('Vandaag / nu bezig', vandaag)}${section('Rest van deze week', week)}${section('Komende 3 weken', straks)}${section('Wachten op iets', wacht)}
+    ${!late.length && !vandaag.length && !week.length ? '<div class="empty">Niets gepland voor deze week 🎉</div>' : ''}
+    ${zonder.length ? `<h2>Zonder datum<small>${zonder.length}</small></h2><div class="muted">Tik op Taken om deze in te plannen.</div>`:''}`;
+}
+
+function vKamers(){
+  const all = taken(), fotos = list('foto'), out = [];
+  ['Begane grond','1e verdieping','Zolder','Buiten'].forEach(vd => {
+    const ks = kamers().filter(k => k.verdieping === vd); if(!ks.length) return;
+    out.push(`<h2>${vd}</h2><div class="grid">${ks.map(k => {
+      const ts = all.filter(t => t.kamer === k.id), kl = ts.filter(t=>t.status==='klaar').length;
+      const f = fotos.filter(f=>f.kamer===k.id).sort((a,b)=>(b.datum||'').localeCompare(a.datum||''))[0];
+      return `<div class="card room" data-act="room" data-id="${k.id}">
+        <div class="ph" ${f?`data-foto="${esc(f.pad)}"`:''}>${f?'':'Nog geen foto'}</div>
+        <div class="in"><div class="nm">${esc(k.naam)}</div>
+        <div class="bar"><i style="width:${pct(ts)}%"></i></div>
+        <div class="pc"><span>${ts.length ? `${kl}/${ts.length} klaar` : 'Geen taken'}</span><span>${ts.length?pct(ts)+'%':''}</span></div></div></div>`;
+    }).join('')}</div>`);
+  });
+  const alg = all.filter(t => !t.kamer);
+  out.push(`<h2>Algemeen (geen kamer)<small>${alg.filter(isOpen).length} open</small></h2>${alg.sort(bySort).map(taskCard).join('')}`);
+  setTimeout(loadThumbs);
+  return out.join('');
+}
+
+function vKamer(){
+  const k = get('kamer', roomId); if(!k){ roomId = null; return vKamers(); }
+  const ts = taken().filter(t => t.kamer === roomId).sort((a,b)=> (a.status==='klaar')-(b.status==='klaar') || bySort(a,b));
+  const fotos = list('foto').filter(f => f.kamer === roomId).sort((a,b)=>(a.datum||'').localeCompare(b.datum||''));
+  const voor = fotos.filter(f=>f.type==='voor')[0], na = fotos.filter(f=>f.type==='na').slice(-1)[0];
+  setTimeout(loadThumbs);
+  return `<button class="back" data-act="back">‹ Alle kamers</button>
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div style="font-size:22px;font-weight:700">${esc(k.naam)}</div><div class="muted">${esc(k.verdieping)} · ${ts.filter(t=>t.status==='klaar').length}/${ts.length} taken klaar</div></div>
+    <div style="font-size:28px;font-weight:800">${pct(ts)}%</div></div><div class="bar" style="margin-top:10px"><i style="width:${pct(ts)}%"></i></div>
+    <label>Notitie voor deze kamer</label><textarea data-act="kamerNotitie" data-id="${k.id}" placeholder="Wat willen we hier? Maten, ideeën, kleuren…">${esc(k.notitie||'')}</textarea></div>
+    <h2>Taken<small><a href="#" data-act="newTask" data-kamer="${k.id}" style="color:var(--brand)">+ taak toevoegen</a></small></h2>
+    ${ts.map(taskCard).join('') || '<div class="empty">Nog geen taken voor deze kamer.</div>'}
+    <h2>Voor / na</h2>
+    <div class="cmp"><div ${voor?`data-foto="${esc(voor.pad)}"`:''}><b>VOOR</b>${voor?'':'Nog geen foto'}</div><div ${na?`data-foto="${esc(na.pad)}"`:''}><b>NA</b>${na?'':'Nog geen foto'}</div></div>
+    <div class="actions" style="justify-content:flex-start;flex-wrap:wrap">
+      ${['voor','tijdens','na'].map(tp => `<label class="btn" style="margin:0;display:inline-block;cursor:pointer;font-size:14px">+ ${tp}-foto<input type="file" accept="image/*" hidden data-act="upload" data-type="${tp}"></label>`).join('')}</div>
+    ${fotos.length ? `<h2>Alle foto's<small>${fotos.length}</small></h2><div class="photos">${fotos.map(f => `<div class="p" data-foto="${esc(f.pad)}" data-act="lightbox" data-id="${f.id}"><span>${f.type} · ${fd(f.datum)}</span></div>`).join('')}</div>` : ''}`;
+}
+
+function vTaken(){
+  const f = filt;
+  let ts = taken().filter(t => (f.status==='open' ? isOpen(t) : f.status==='klaar' ? !isOpen(t) : true) && (!f.wie || t.wie===f.wie) && (!f.kamer || (f.kamer==='-' ? !t.kamer : t.kamer===f.kamer))).sort(bySort);
+  const chip = (g,v,l) => `<button class="${f[g]===v?'on':''}" data-act="filter" data-g="${g}" data-v="${v}">${l}</button>`;
+  return `<div class="filters">${chip('status','open','Open')}${chip('status','klaar','Klaar')}${chip('status','alle','Alles')}</div>
+    <div class="filters">${chip('wie','','Iedereen')}${Object.entries(WIE).map(([k,l])=>chip('wie',k,l)).join('')}</div>
+    <select data-act="filterKamer" style="margin-bottom:12px"><option value="">Alle kamers</option><option value="-" ${f.kamer==='-'?'selected':''}>Algemeen</option>${kamers().map(k=>`<option value="${k.id}" ${f.kamer===k.id?'selected':''}>${esc(k.naam)}</option>`).join('')}</select>
+    ${ts.map(taskCard).join('') || '<div class="empty">Geen taken met dit filter.</div>'}`;
+}
+
+function vPlanning(){
+  const start = addD(TODAY, -((dt(TODAY).getDay()+6)%7)), end = addD(VERHUIS, 3), W = 22, n = diff(start,end)+1;
+  const ts = taken().filter(t => (t.start||t.deadline) && (t.start||t.deadline) <= end).sort((a,b)=>(a.start||a.deadline).localeCompare(b.start||b.deadline));
+  const later = taken().filter(t => (t.start||t.deadline) > end).sort(bySort);
+  const x = d => diff(start,d) * W;
+  let head = '';
+  for(let i=0;i<n;i+=7){ head += `<div style="width:${W*7}px">${fd(addD(start,i))}</div>`; }
+  const weekend = Array.from({length:n},(_,i)=>i).filter(i=>[0,6].includes(dt(addD(start,i)).getDay())).map(i=>`<div style="position:absolute;left:${i*W}px;width:${W}px;top:26px;bottom:0;background:var(--chip);opacity:.5"></div>`).join('');
+  const rows = ts.map(t => {
+    const s = t.start || t.deadline, e = t.deadline || t.start;
+    const left = Math.max(0, x(s)), w = Math.max(W, (diff(s,e)+1)*W - (x(s)<0?-x(s):0));
+    return `<div class="tlr"><div class="tlb ${t.status==='klaar'?'klaar':isLate(t)?'late':t.wie==='aannemer'?'aannemer':''}" data-act="editTask" data-id="${t.id}" style="left:${left}px;width:${w}px" title="${esc(t.titel)}"></div><div class="tll" style="left:${left+w+6}px">${esc(t.titel)}</div></div>`;
+  }).join('');
+  const marks = list('mijlpaal').filter(m=>m.datum>=start&&m.datum<=end).map(m => `<div class="tlv" style="left:${x(m.datum)+W/2}px"><span>${esc(m.titel)}</span></div>`).join('');
+  return `<div class="tl"><div class="tlin" style="width:${n*W+220}px">
+    <div class="tlh">${head}</div>${weekend}${marks}<div class="tlv vandaag" style="left:${x(TODAY)+W/2}px"><span style="color:var(--bad)">vandaag</span></div>
+    <div style="padding-top:2px">${rows || '<div class="empty">Geef taken een start- of einddatum om ze hier te zien.</div>'}</div></div></div>
+    <p class="muted">Paars = aannemer, blauw = zelf, groen = klaar, rood = te laat. Tik op een balk om te bewerken. Gearceerd = weekend.</p>
+    ${later.length ? section('Na de verhuizing', later) : ''}`;
+}
+
+function vBudget(){
+  const posten = list('post').sort((a,b)=>(a.datum||'').localeCompare(b.datum||'')), ts = taken();
+  const verbouw = posten.filter(p => p.groep !== 'Overig (geen verbouw)' && p.groep !== 'Buffer');
+  const begroot = verbouw.reduce((s,p)=>s+(p.begroot||0),0), uit = verbouw.reduce((s,p)=>s+(p.werkelijk||0),0);
+  const resterend = verbouw.reduce((s,p)=>s+Math.max(p.begroot||0, p.werkelijk||0) - (p.werkelijk||0),0);
+  const buffer = posten.find(p=>p.groep==='Buffer'), bufferNu = buffer ? buffer.begroot||0 : 0, advies = Math.round(begroot*.1/100)*100;
+  const depot = verbouw.filter(p=>p.bron==='bouwdepot').reduce((s,p)=>s+(p.begroot||0),0);
+  const over = verbouw.filter(p=>p.bron==='overwaarde').reduce((s,p)=>s+(p.begroot||0),0);
+  const geschat = pid => ts.filter(t => t.post === pid).reduce((s,t)=>s+(t.schatting||0),0);
+  const zonderPost = ts.filter(t => !t.post && t.schatting);
+  const row = p => { const g = geschat(p.id), verschil = p.werkelijk!=null ? (p.begroot||0)-p.werkelijk : null;
+    return `<tr class="clk" data-act="editPost" data-id="${p.id}"><td>${p.betaald?'✓ ':''}${esc(p.naam)}<div class="muted">${fd(p.datum)} · ${BRON[p.bron]||''}</div></td><td>${eur(p.begroot)}</td><td>${g?eur(g):'–'}</td><td>${eur(p.werkelijk)}</td><td class="${verschil<0?'neg':verschil>0?'pos':''}">${verschil==null?'–':eur(verschil)}</td></tr>`; };
+  return `<div class="stats" style="margin-top:0">
+    <div class="stat"><div class="n">${eur(begroot)}</div><div class="l">begroot (verbouw)</div></div>
+    <div class="stat"><div class="n">${eur(uit)}</div><div class="l">uitgegeven</div></div>
+    <div class="stat"><div class="n">${eur(resterend)}</div><div class="l">nog te betalen</div></div>
+    <div class="stat"><div class="n">${eur(depot)}</div><div class="l">bouwdepot</div></div>
+    <div class="stat"><div class="n">${eur(over)}</div><div class="l">overwaarde</div></div>
+    <div class="stat"><div class="n">${eur(begroot-depot-over)}</div><div class="l">eigen geld</div></div></div>
+    ${bufferNu < advies ? `<div class="alert"><b>Geen of te weinig buffer.</b> Onvoorzien staat op ${eur(bufferNu)}. Bij een verbouwing in een huis uit 1977 reken je gemakkelijk op 10% extra (≈ ${eur(advies)}). Tik op "Onvoorzien" om dit aan te passen.</div>`:''}
+    <h2>Uitgaven</h2><div class="card" style="padding:4px 6px;overflow-x:auto"><table><tr><th>Post</th><th>Begroot</th><th>Via taken</th><th>Werkelijk</th><th>Over</th></tr>${posten.map(row).join('')}
+    ${zonderPost.length?`<tr><td>Taken zonder post</td><td>–</td><td>${eur(zonderPost.reduce((s,t)=>s+t.schatting,0))}</td><td></td><td></td></tr>`:''}</table></div>
+    <p class="muted">"Via taken" is de som van de schattingen die je per taak invult. "Werkelijk" vul je in zodra een factuur binnen is. Alleen uitgaven worden bijgehouden.</p>
+    <div class="actions" style="justify-content:flex-start"><button class="btn" data-act="newPost">+ Nieuwe uitgavepost</button></div>`;
+}
+
+/* ================= Foto's ================= */
+const urlCache = {};
+async function loadThumbs(){
+  if(!sb || !user) return;
+  const els = [...document.querySelectorAll('[data-foto]')], need = [...new Set(els.map(e=>e.dataset.foto).filter(p => !urlCache[p]))];
+  if(need.length){ const {data} = await sb.storage.from('fotos').createSignedUrls(need, 3600); (data||[]).forEach(d => { if(d.signedUrl) urlCache[d.path] = d.signedUrl; }); }
+  els.forEach(e => { const u = urlCache[e.dataset.foto]; if(u) e.style.backgroundImage = `url("${u}")`; });
+}
+async function resize(file, max=1600){
+  const bmp = await createImageBitmap(file, {imageOrientation:'from-image'}), r = Math.min(1, max/Math.max(bmp.width,bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width*r); c.height = Math.round(bmp.height*r);
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  return new Promise(res => c.toBlob(res,'image/jpeg',.82));
+}
+async function upload(file, type){
+  if(!sb || !user) return alert("Foto's bewaren werkt alleen als je bent ingelogd en online bent.");
+  setSync('Foto uploaden…');
+  const pad = `${roomId}/${Date.now()}.jpg`, blob = await resize(file);
+  const {error} = await sb.storage.from('fotos').upload(pad, blob, {contentType:'image/jpeg'});
+  if(error){ setSync('⚠ Upload mislukt'); return alert('Upload mislukt: ' + error.message); }
+  const id = uid(); save('foto', id, {kamer:roomId, type, pad, datum:TODAY});
+}
+
+/* ================= Formulieren ================= */
+const modal = html => { $('#sheet').innerHTML = html; $('#modal').classList.add('on'); };
+const closeModal = () => $('#modal').classList.remove('on');
+const val = id => document.getElementById(id).value;
+const opts = (obj,sel) => Object.entries(obj).map(([k,v]) => `<option value="${k}" ${sel===k?'selected':''}>${v}</option>`).join('');
+
+function taskForm(id, pre={}){
+  const t = id ? get('taak',id) : {status:'todo',wie:'samen',kamer:pre.kamer||'',start:'',deadline:'',schatting:null,post:'',notitie:'',titel:''};
+  const posten = list('post');
+  modal(`<h3>${id?'Taak bewerken':'Nieuwe taak'}</h3>
+    <label>Wat moet er gebeuren?</label><input id="f_titel" value="${esc(t.titel)}" placeholder="Bijv. Muren schuren en verven">
+    <div class="two"><div><label>Kamer</label><select id="f_kamer"><option value="">Algemeen</option>${kamers().map(k=>`<option value="${k.id}" ${t.kamer===k.id?'selected':''}>${esc(k.naam)}</option>`).join('')}</select></div>
+    <div><label>Wie</label><select id="f_wie">${opts(WIE,t.wie)}</select></div></div>
+    <div class="two"><div><label>Start</label><input id="f_start" type="date" value="${t.start||''}"></div><div><label>Deadline</label><input id="f_deadline" type="date" value="${t.deadline||''}"></div></div>
+    <div class="two"><div><label>Status</label><select id="f_status">${opts(STATUS,t.status)}</select></div>
+    <div><label>Geschatte kosten (€)</label><input id="f_schatting" inputmode="decimal" value="${t.schatting??''}" placeholder="0"></div></div>
+    <label>Uitgavepost</label><select id="f_post"><option value="">Geen</option>${posten.map(p=>`<option value="${p.id}" ${t.post===p.id?'selected':''}>${esc(p.naam)}</option>`).join('')}</select>
+    <label>Notitie</label><textarea id="f_notitie">${esc(t.notitie||'')}</textarea>
+    <div class="actions"><button class="btn del" data-act="delTask" data-id="${id||''}" ${id?'':'style="visibility:hidden"'}>Verwijderen</button><span style="flex:1"></span><button class="btn" data-act="close">Annuleren</button><button class="btn pri" data-act="saveTask" data-id="${id||''}">Opslaan</button></div>`);
+}
+function postForm(id){
+  const p = id ? get('post',id) : {naam:'',begroot:null,werkelijk:null,datum:TODAY,bron:'eigen',groep:'Zelf doen',betaald:false};
+  modal(`<h3>${id?'Uitgavepost':'Nieuwe uitgavepost'}</h3>
+    <label>Naam</label><input id="p_naam" value="${esc(p.naam)}">
+    <div class="two"><div><label>Begroot (€)</label><input id="p_begroot" inputmode="decimal" value="${p.begroot??''}"></div><div><label>Werkelijk (€)</label><input id="p_werkelijk" inputmode="decimal" value="${p.werkelijk??''}" placeholder="Zodra bekend"></div></div>
+    <div class="two"><div><label>Verwachte datum</label><input id="p_datum" type="date" value="${p.datum||''}"></div><div><label>Betaald uit</label><select id="p_bron">${opts({eigen:'Eigen geld',bouwdepot:'Bouwdepot',overwaarde:'Overwaarde'},p.bron)}</select></div></div>
+    <label><input type="checkbox" id="p_betaald" style="width:auto" ${p.betaald?'checked':''}> Betaald</label>
+    <div class="actions"><button class="btn del" data-act="delPost" data-id="${id||''}" ${id?'':'style="visibility:hidden"'}>Verwijderen</button><span style="flex:1"></span><button class="btn" data-act="close">Annuleren</button><button class="btn pri" data-act="savePost" data-id="${id||''}">Opslaan</button></div>`);
+}
+function settings(){
+  modal(`<h3>Instellingen</h3>
+    <p class="muted">${user ? `Ingelogd als ${esc(user.email)}.` : localOnly ? 'Je werkt zonder inlog: alles blijft alleen op dit apparaat.' : ''} ${sb ? '' : 'Geen verbinding met de database.'}</p>
+    <h2>Taken importeren</h2><p class="muted">Plak hier de JSON die Claude na het rondje door het huis heeft gemaakt.</p>
+    <textarea id="imp" placeholder='{"taken":[{"titel":"…","kamer":"Keuken","wie":"samen","deadline":"2026-11-10","schatting":150}]}'></textarea>
+    <div class="actions"><button class="btn" data-act="export">Back-up downloaden</button><button class="btn pri" data-act="import">Importeren</button></div>
+    <div class="actions">${user?'<button class="btn" data-act="logout">Uitloggen</button>':'<button class="btn" data-act="showLogin">Inloggen</button>'}<button class="btn" data-act="close">Sluiten</button></div>`);
+}
+function importJSON(){
+  let j; try{ j = JSON.parse(val('imp')); }catch(e){ return alert('Dit is geen geldige JSON.'); }
+  const ks = kamers(); let n = 0;
+  (j.taken||[]).forEach(t => {
+    const k = ks.find(k => k.naam.toLowerCase() === String(t.kamer||'').toLowerCase());
+    save('taak', uid()+n++, {status:'todo',wie:'samen',start:'',deadline:'',schatting:null,post:'',notitie:'',voorstel:true,...t,kamer:k?k.id:null});
+  });
+  (j.kamers||[]).forEach((k,i) => { if(!ks.find(x=>x.naam.toLowerCase()===k.naam.toLowerCase())) save('kamer', uid()+i, {verdieping:'Overig',volgorde:99,...k}); });
+  closeModal(); alert(`${n} taken geïmporteerd (met label "Voorstel").`);
+}
+
+/* ================= Acties ================= */
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-act]'); if(!el) { if(e.target.id==='modal') closeModal(); if(e.target.closest('#lb')) $('#lb').classList.remove('on'); return; }
+  const a = el.dataset.act, id = el.dataset.id;
+  if(el.tagName==='INPUT' || el.tagName==='TEXTAREA' || el.tagName==='SELECT') return;
+  if(a==='tab'){ tab = el.dataset.v; roomId = null; render(); scrollTo(0,0); }
+  else if(a==='toggle'){ e.stopPropagation(); const t = get('taak',id); save('taak',id,{...t,status:t.status==='klaar'?'todo':'klaar',klaarOp:t.status==='klaar'?null:TODAY}); }
+  else if(a==='editTask') taskForm(id);
+  else if(a==='newTask'){ e.preventDefault(); taskForm(null,{kamer:el.dataset.kamer||roomId||''}); }
+  else if(a==='saveTask'){
+    if(!val('f_titel').trim()) return alert('Geef de taak een naam.');
+    const old = id ? get('taak',id) : {};
+    save('taak', id||uid(), {...old, titel:val('f_titel').trim(), kamer:val('f_kamer')||null, wie:val('f_wie'), start:val('f_start'), deadline:val('f_deadline'),
+      status:val('f_status'), schatting:num(val('f_schatting')), post:val('f_post'), notitie:val('f_notitie'), voorstel:false, klaarOp: val('f_status')==='klaar' ? (old.klaarOp||TODAY) : null});
+    closeModal();
+  }
+  else if(a==='delTask'){ if(confirm('Taak verwijderen?')){ remove('taak',id); closeModal(); } }
+  else if(a==='close') closeModal();
+  else if(a==='room'){ roomId = id; render(); scrollTo(0,0); }
+  else if(a==='back'){ roomId = null; render(); }
+  else if(a==='filter'){ filt[el.dataset.g] = el.dataset.v; render(); }
+  else if(a==='editPost') postForm(id);
+  else if(a==='newPost') postForm(null);
+  else if(a==='savePost'){
+    if(!val('p_naam').trim()) return alert('Geef de post een naam.');
+    const old = id ? get('post',id) : {groep:'Zelf doen'};
+    save('post', id||uid(), {...old, naam:val('p_naam').trim(), begroot:num(val('p_begroot'))||0, werkelijk:num(val('p_werkelijk')), datum:val('p_datum'), bron:val('p_bron'), betaald:document.getElementById('p_betaald').checked});
+    closeModal();
+  }
+  else if(a==='delPost'){ if(confirm('Uitgavepost verwijderen?')){ remove('post',id); closeModal(); } }
+  else if(a==='settings') settings();
+  else if(a==='import') importJSON();
+  else if(a==='export'){ const b = new Blob([JSON.stringify(S.items,null,1)],{type:'application/json'}), l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `mesdaglaan-backup-${TODAY}.json`; l.click(); }
+  else if(a==='logout'){ await sb.auth.signOut(); location.reload(); }
+  else if(a==='showLogin'){ closeModal(); showLogin(); }
+  else if(a==='lightbox'){ const f = get('foto',id); if(f && urlCache[f.pad]){ $('#lbimg').src = urlCache[f.pad]; $('#lbcap').textContent = `${f.type} · ${fd(f.datum)}`; $('#lb').classList.add('on'); }
+    else if(f && confirm('Foto verwijderen?')){ sb.storage.from('fotos').remove([f.pad]); remove('foto',id); } }
+});
+document.addEventListener('change', e => {
+  const el = e.target, a = el.dataset.act;
+  if(a==='upload' && el.files[0]) upload(el.files[0], el.dataset.type);
+  else if(a==='filterKamer'){ filt.kamer = el.value; render(); }
+  else if(a==='kamerNotitie'){ const k = get('kamer',el.dataset.id); save('kamer',k.id,{...k,notitie:el.value}); }
+});
+document.addEventListener('contextmenu', e => { const p = e.target.closest('.p'); if(p){ e.preventDefault(); const f = get('foto',p.dataset.id); if(f && confirm('Foto verwijderen?')){ sb.storage.from('fotos').remove([f.pad]); remove('foto',f.id); } } });
+
+/* ================= Inloggen + opstarten ================= */
+function showLogin(msg=''){
+  $('#view').innerHTML = `<div class="login card"><h1 style="margin:0 0 4px">🏠 Mesdaglaan</h1><p class="muted">Verbouwing – voortgang bijhouden</p>
+    <label>E-mail</label><input id="l_mail" type="email" autocomplete="username"><label>Wachtwoord</label><input id="l_pw" type="password" autocomplete="current-password">
+    <p id="l_msg" style="color:var(--bad);min-height:20px;margin:8px 0">${esc(msg)}</p>
+    <div class="actions"><button class="btn" id="l_new">Account aanmaken</button><button class="btn pri" id="l_in">Inloggen</button></div>
+    <p class="muted" style="margin-top:16px"><a href="#" id="l_local" style="color:var(--brand)">Zonder inloggen verder (alleen op dit apparaat)</a></p></div>`;
+  document.querySelector('nav').style.display = 'none'; $('.fab').style.display = 'none';
+  const go = async signup => {
+    $('#l_msg').textContent = '…';
+    const c = {email:val('l_mail').trim(), password:val('l_pw')};
+    const {data,error} = signup ? await sb.auth.signUp(c) : await sb.auth.signInWithPassword(c);
+    if(error) return $('#l_msg').textContent = error.message;
+    if(!data.session) return $('#l_msg').textContent = 'Account aangemaakt. Bevestig je e-mail en log daarna in.';
+    start(data.session);
+  };
+  $('#l_in').onclick = () => go(false); $('#l_new').onclick = () => go(true);
+  $('#l_pw').onkeydown = e => { if(e.key==='Enter') go(false); };
+  $('#l_local').onclick = e => { e.preventDefault(); localOnly = true; if(!Object.keys(S.items).length) { seed(); } document.querySelector('nav').style.display = ''; setSync('Lokaal'); render(); };
+}
+async function start(session){
+  user = session.user; document.querySelector('nav').style.display = ''; setSync('Laden…');
+  try{ await loadRemote(); subscribe(); setSync('✓ Gesynchroniseerd'); }
+  catch(e){ console.warn(e); setSync('⚠ Offline'); if(!Object.keys(S.items).length) seed(); render(); }
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden && user && sb) loadRemote().catch(()=>{}); });
+window.addEventListener('online', () => { if(user) flush(); });
+
+(async function init(){
+  if(!window.supabase){ localOnly = true; if(!Object.keys(S.items).length) seed(); setSync('Lokaal'); return render(); }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  try{
+    const {data} = await sb.auth.getSession();
+    if(data.session) return start(data.session);
+    showLogin();
+  }catch(e){ showLogin('Geen verbinding met de database. Je kunt wel lokaal verder.'); }
+})();
+</script>
+</body>
+</html>
