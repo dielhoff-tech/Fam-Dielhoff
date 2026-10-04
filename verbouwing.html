@@ -194,7 +194,7 @@ async function loadRemote(){
   hernoemKamers();
   persist(); await flush(); render();
 }
-const KAMERNAMEN = {v1_slk3:['Slaapkamer 3','Slaapkamer Liz'], v1_slk4:['Slaapkamer 4','Slaapkamer Paulien & Joeri'], v2_slk5:['Slaapkamer 5','Slaapkamer Charli']};
+const KAMERNAMEN = {v1_slk1:['Slaapkamer 1','Logeer- / meditatiekamer'], v1_slk2:['Slaapkamer 2','Inloopkast'], v1_slk3:['Slaapkamer 3','Slaapkamer Liz'], v1_slk4:['Slaapkamer 4','Slaapkamer Paulien & Joeri'], v2_slk5:['Slaapkamer 5','Slaapkamer Charli']};
 function hernoemKamers(){
   for(const [id,[oud,nieuw]] of Object.entries(KAMERNAMEN)){
     const i = S.items[K('kamer',id)];
@@ -217,7 +217,7 @@ function seed(){
   const put = (soort,id,data) => { S.items[K(soort,id)] = {soort,id,data,bijgewerkt:new Date().toISOString()}; };
   [['bg_kamer1','Werkkamer (tuin)','Begane grond'],['bg_keuken','Keuken','Begane grond'],['bg_was','Wasruimte','Begane grond'],['bg_kamer2','Kamer (straat)','Begane grond'],
    ['bg_hal','Entree / hal','Begane grond'],['bg_wc','WC','Begane grond'],['bg_woon','Woonkamer','Begane grond'],
-   ['v1_slk1','Slaapkamer 1','1e verdieping'],['v1_slk2','Slaapkamer 2','1e verdieping'],['v1_slk3','Slaapkamer Liz','1e verdieping'],['v1_slk4','Slaapkamer Paulien & Joeri','1e verdieping'],
+   ['v1_slk1','Logeer- / meditatiekamer','1e verdieping'],['v1_slk2','Inloopkast','1e verdieping'],['v1_slk3','Slaapkamer Liz','1e verdieping'],['v1_slk4','Slaapkamer Paulien & Joeri','1e verdieping'],
    ['v1_bad','Badkamer','1e verdieping'],['v1_over','Overloop','1e verdieping'],['v1_kast','Kast','1e verdieping'],
    ['v2_over','Zolder overloop','Zolder'],['v2_slk5','Slaapkamer Charli','Zolder'],
    ['sch_schuur','Schuur','Buiten'],['tuin','Tuin','Buiten']
