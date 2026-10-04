@@ -191,7 +191,15 @@ async function loadRemote(){
     for(const k in remote) if(!pending[k]) S.items[k] = {soort:remote[k].soort, id:remote[k].id, data:remote[k].data, bijgewerkt:remote[k].bijgewerkt};
     for(const k in S.items) if(!remote[k] && !pending[k]) delete S.items[k];
   }
+  hernoemKamers();
   persist(); await flush(); render();
+}
+const KAMERNAMEN = {v1_slk3:['Slaapkamer 3','Slaapkamer Liz'], v1_slk4:['Slaapkamer 4','Slaapkamer Paulien & Joeri'], v2_slk5:['Slaapkamer 5','Slaapkamer Charli']};
+function hernoemKamers(){
+  for(const [id,[oud,nieuw]] of Object.entries(KAMERNAMEN)){
+    const i = S.items[K('kamer',id)];
+    if(i && i.data.naam === oud){ i.data = {...i.data, naam:nieuw}; i.bijgewerkt = new Date().toISOString(); pending[K('kamer',id)] = 1; }
+  }
 }
 function subscribe(){
   if(rt) return;
@@ -209,9 +217,9 @@ function seed(){
   const put = (soort,id,data) => { S.items[K(soort,id)] = {soort,id,data,bijgewerkt:new Date().toISOString()}; };
   [['bg_kamer1','Werkkamer (tuin)','Begane grond'],['bg_keuken','Keuken','Begane grond'],['bg_was','Wasruimte','Begane grond'],['bg_kamer2','Kamer (straat)','Begane grond'],
    ['bg_hal','Entree / hal','Begane grond'],['bg_wc','WC','Begane grond'],['bg_woon','Woonkamer','Begane grond'],
-   ['v1_slk1','Slaapkamer 1','1e verdieping'],['v1_slk2','Slaapkamer 2','1e verdieping'],['v1_slk3','Slaapkamer 3','1e verdieping'],['v1_slk4','Slaapkamer 4','1e verdieping'],
+   ['v1_slk1','Slaapkamer 1','1e verdieping'],['v1_slk2','Slaapkamer 2','1e verdieping'],['v1_slk3','Slaapkamer Liz','1e verdieping'],['v1_slk4','Slaapkamer Paulien & Joeri','1e verdieping'],
    ['v1_bad','Badkamer','1e verdieping'],['v1_over','Overloop','1e verdieping'],['v1_kast','Kast','1e verdieping'],
-   ['v2_over','Zolder overloop','Zolder'],['v2_slk5','Slaapkamer 5','Zolder'],
+   ['v2_over','Zolder overloop','Zolder'],['v2_slk5','Slaapkamer Charli','Zolder'],
    ['sch_schuur','Schuur','Buiten'],['tuin','Tuin','Buiten']
   ].forEach(([id,naam,verdieping],i) => put('kamer',id,{naam,verdieping,volgorde:i}));
 
@@ -345,6 +353,7 @@ function vKamer(){
   return `<button class="back" data-act="back">‹ Alle kamers</button>
     <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div style="font-size:22px;font-weight:700">${esc(k.naam)}</div><div class="muted">${esc(k.verdieping)} · ${ts.filter(t=>t.status==='klaar').length}/${ts.length} taken klaar</div></div>
     <div style="font-size:28px;font-weight:800">${pct(ts)}%</div></div><div class="bar" style="margin-top:10px"><i style="width:${pct(ts)}%"></i></div>
+    <label>Naam van de kamer</label><input data-act="kamerNaam" data-id="${k.id}" value="${esc(k.naam)}">
     <label>Notitie voor deze kamer</label><textarea data-act="kamerNotitie" data-id="${k.id}" placeholder="Wat willen we hier? Maten, ideeën, kleuren…">${esc(k.notitie||'')}</textarea></div>
     <h2>Taken<small><a href="#" data-act="newTask" data-kamer="${k.id}" style="color:var(--brand)">+ taak toevoegen</a></small></h2>
     ${ts.map(taskCard).join('') || '<div class="empty">Nog geen taken voor deze kamer.</div>'}
@@ -525,6 +534,7 @@ document.addEventListener('change', e => {
   const el = e.target, a = el.dataset.act;
   if(a==='upload' && el.files[0]) upload(el.files[0], el.dataset.type);
   else if(a==='filterKamer'){ filt.kamer = el.value; render(); }
+  else if(a==='kamerNaam' && el.value.trim()){ const k = get('kamer',el.dataset.id); save('kamer',k.id,{...k,naam:el.value.trim()}); }
   else if(a==='kamerNotitie'){ const k = get('kamer',el.dataset.id); save('kamer',k.id,{...k,notitie:el.value}); }
 });
 document.addEventListener('contextmenu', e => { const p = e.target.closest('.p'); if(p){ e.preventDefault(); const f = get('foto',p.dataset.id); if(f && confirm('Foto verwijderen?')){ sb.storage.from('fotos').remove([f.pad]); remove('foto',f.id); } } });
