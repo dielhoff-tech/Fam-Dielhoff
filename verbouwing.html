@@ -194,7 +194,7 @@ async function loadRemote(){
   hernoemKamers();
   persist(); await flush(); render();
 }
-const KAMERNAMEN = {v1_slk1:['Slaapkamer 1','Logeer- / meditatiekamer'], v1_slk2:['Slaapkamer 2','Inloopkast'], v1_slk3:['Slaapkamer 3','Slaapkamer Liz'], v1_slk4:['Slaapkamer 4','Slaapkamer Paulien & Joeri'], v2_slk5:['Slaapkamer 5','Slaapkamer Charli']};
+const KAMERNAMEN = {bg_kamer2:['Kamer (straat)','Garage'], v1_slk1:['Slaapkamer 1','Logeer- / meditatiekamer'], v1_slk2:['Slaapkamer 2','Inloopkast'], v1_slk3:['Slaapkamer 3','Slaapkamer Liz'], v1_slk4:['Slaapkamer 4','Slaapkamer Paulien & Joeri'], v2_slk5:['Slaapkamer 5','Slaapkamer Charli']};
 function hernoemKamers(){
   for(const [id,[oud,nieuw]] of Object.entries(KAMERNAMEN)){
     const i = S.items[K('kamer',id)];
@@ -215,7 +215,7 @@ function subscribe(){
 /* ================= Seed-data ================= */
 function seed(){
   const put = (soort,id,data) => { S.items[K(soort,id)] = {soort,id,data,bijgewerkt:new Date().toISOString()}; };
-  [['bg_kamer1','Werkkamer (tuin)','Begane grond'],['bg_keuken','Keuken','Begane grond'],['bg_was','Wasruimte','Begane grond'],['bg_kamer2','Kamer (straat)','Begane grond'],
+  [['bg_kamer1','Werkkamer (tuin)','Begane grond'],['bg_keuken','Keuken','Begane grond'],['bg_was','Wasruimte','Begane grond'],['bg_kamer2','Garage','Begane grond'],
    ['bg_hal','Entree / hal','Begane grond'],['bg_wc','WC','Begane grond'],['bg_woon','Woonkamer','Begane grond'],
    ['v1_slk1','Logeer- / meditatiekamer','1e verdieping'],['v1_slk2','Inloopkast','1e verdieping'],['v1_slk3','Slaapkamer Liz','1e verdieping'],['v1_slk4','Slaapkamer Paulien & Joeri','1e verdieping'],
    ['v1_bad','Badkamer','1e verdieping'],['v1_over','Overloop','1e verdieping'],['v1_kast','Kast','1e verdieping'],
@@ -483,13 +483,17 @@ function settings(){
 }
 function importJSON(){
   let j; try{ j = JSON.parse(val('imp')); }catch(e){ return alert('Dit is geen geldige JSON.'); }
-  const ks = kamers(); let n = 0;
+  const ks = kamers(); let n = 0, al = 0; const onbekend = new Set();
   (j.taken||[]).forEach(t => {
+    const id = t.id || uid()+n;
+    if(get('taak',id)){ al++; return; }
     const k = ks.find(k => k.naam.toLowerCase() === String(t.kamer||'').toLowerCase());
-    save('taak', uid()+n++, {status:'todo',wie:'samen',start:'',deadline:'',schatting:null,post:'',notitie:'',voorstel:true,...t,kamer:k?k.id:null});
+    if(t.kamer && !k) onbekend.add(t.kamer);
+    const {id:_, ...d} = t; n++;
+    save('taak', id, {status:'todo',wie:'samen',start:'',deadline:'',schatting:null,post:'',notitie:'',voorstel:true,...d,kamer:k?k.id:null});
   });
   (j.kamers||[]).forEach((k,i) => { if(!ks.find(x=>x.naam.toLowerCase()===k.naam.toLowerCase())) save('kamer', uid()+i, {verdieping:'Overig',volgorde:99,...k}); });
-  closeModal(); alert(`${n} taken geïmporteerd (met label "Voorstel").`);
+  closeModal(); alert(`${n} taken geïmporteerd (met label "Voorstel").` + (al?`\n${al} stonden er al en zijn overgeslagen.`:'') + (onbekend.size?`\nOnbekende kamers (taak staat onder Algemeen): ${[...onbekend].join(', ')}`:''));
 }
 
 /* ================= Acties ================= */
