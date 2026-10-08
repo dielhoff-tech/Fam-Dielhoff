@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1f4e5f">
+<meta name="theme-color" content="#c0583a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Mesdaglaan Verbouwing</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#f5f3ee;--card:#fff;--ink:#1d2a30;--mut:#6b777d;--line:#e4e0d6;
-  --brand:#1f4e5f;--brand-ink:#fff;--accent:#e08a2c;--ok:#2e8b57;--bad:#c0392b;--warn:#d98a00;--info:#3b6fb6;
-  --chip:#eceae2;--shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+  --bg:#fdf6ec;--card:#fffaf3;--ink:#3b2a1a;--mut:#8a6a4a;--line:#f2dfc4;
+  --brand:#c0583a;--brand-ink:#fff;--accent:#e08a2c;--ok:#2e8b57;--bad:#c0392b;--warn:#d98a00;--info:#3b6fb6;
+  --chip:#f9e4c8;--shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){
   --bg:#12181b;--card:#1b2428;--ink:#e8eef0;--mut:#93a1a8;--line:#2b373c;--brand:#3d8ba5;--brand-ink:#fff;
@@ -33,7 +33,7 @@ nav button.on{color:var(--brand);font-weight:700}
 h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:22px 0 8px;display:flex;justify-content:space-between;align-items:baseline}
 h2 small{text-transform:none;letter-spacing:0;font-size:12px}
 .card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px}
-.hero{background:linear-gradient(135deg,var(--brand),#2b6b82);color:#fff;border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+.hero{background:linear-gradient(135deg,#e07b39,#c0583a);color:#fff;border-radius:16px;padding:18px;box-shadow:var(--shadow)}
 .hero .big{font-size:40px;font-weight:800;line-height:1}
 .hero .sub{opacity:.85;font-size:14px;margin-top:4px}
 .hero .row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
@@ -82,11 +82,11 @@ td{padding:9px 8px;border-top:1px solid var(--line);text-align:right;font-varian
 th:first-child,td:first-child{text-align:left}
 tr.clk{cursor:pointer}
 .neg{color:var(--bad);font-weight:600}.pos{color:var(--ok)}
-.geld{--navy:#00007D;--teal:#00A5AA;--rood:#E2231A}
+.geld{--navy:#c0583a;--teal:#6aaa72;--rood:#c0392b}
 .gblok{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .gblok>div{border-radius:14px;padding:14px;color:#fff;box-shadow:var(--shadow)}
 .gblok .n{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}.gblok .l{font-size:13px;opacity:.9}
-.gblok .eig{background:var(--navy)}.gblok .ow{background:var(--teal)}.gblok .tot{grid-column:1/-1;background:var(--card);color:var(--ink);border:2px solid var(--navy)}
+.gblok .eig{background:linear-gradient(135deg,#e07b39,#c0583a)}.gblok .ow{background:var(--teal)}.gblok .tot{grid-column:1/-1;background:var(--card);color:var(--ink);border:2px solid var(--navy)}
 .gblok .min{background:var(--rood)!important;color:#fff!important;border-color:var(--rood)!important}
 .galert{background:var(--rood);color:#fff;border-radius:12px;padding:12px;font-size:14px;margin-top:12px}
 .grow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 4px;border-top:1px solid var(--line)}
@@ -231,7 +231,7 @@ function migreerGeld(){
   pas('p_plaats',{bron:'eigen'});
   if(!S.items[K('post','p_dubbel')]) zet('post','p_dubbel',{naam:'Dubbele lasten',begroot:4728,datum:'2026-11-30',bron:'eigen',groep:'Wonen',werkelijk:null,betaald:false});
   if(!S.items[K('geld','bronnen')]) zet('geld','bronnen',{overwaarde:35000,overwaardeDatum:'2026-11-30',
-    rekeningen:[2463,640,10380,380,1990,10650,650,114].map((bedrag,i) => ({naam:'Rekening '+(i+1), bedrag}))});
+    eigen:27267});
   zet('instelling','geld_v1',{op:nu});
 }
 function subscribe(){
@@ -435,7 +435,7 @@ function vBudget(){
   const bedrag = p => p.werkelijk ?? p.begroot ?? 0;
   const telt = p => !p.betaald && p.bron !== 'bouwdepot' && p.groep !== 'Overig (geen verbouw)' && p.groep !== 'Buffer';
   const open = posten.filter(telt), betaald = posten.filter(p => p.betaald), overig = posten.filter(p => !p.betaald && !telt(p));
-  const eigen = (g.rekeningen||[]).reduce((s,r)=>s+(r.bedrag||0),0), ow = g.overwaarde||0;
+  const eigen = g.eigen ?? (g.rekeningen||[]).reduce((s,r)=>s+(r.bedrag||0),0), ow = g.overwaarde||0;
   const voor = open.filter(p => p.bron !== 'overwaarde').reduce((s,p)=>s+bedrag(p),0);
   const na = open.filter(p => p.bron === 'overwaarde').reduce((s,p)=>s+bedrag(p),0);
   const eigenOver = eigen - voor, owOver = ow - na, totOver = eigenOver + owOver;
@@ -459,13 +459,9 @@ function vBudget(){
     <div class="actions" style="justify-content:flex-start"><button class="btn" data-act="newPost">+ Nieuwe uitgave</button></div>
     ${zonderPost ? `<div class="alert"><b>Let op: ${eur(zonderPost)} aan kostenschattingen in taken</b> hoort nog bij geen enkele uitgave (bijv. vloeren, schuifpui, voordeur) en telt hierboven niet mee. Maak er een uitgave van zodra je besluit het te doen.</div>`:''}
 
-    <h2>Eigen geld<small>${eur(eigen)}</small></h2>
-    <div class="card" style="padding:4px 10px">${(g.rekeningen||[]).map((r,i) => `<div class="grow">
-        <input class="nm" data-act="rekNaam" data-i="${i}" value="${esc(r.naam)}" aria-label="Naam rekening">
-        <input inputmode="decimal" data-act="rekBedrag" data-i="${i}" value="${fnum(r.bedrag)}" aria-label="Saldo ${esc(r.naam)}">
-        <button class="xbtn" data-act="rekDel" data-i="${i}" aria-label="Rekening verwijderen">✕</button></div>`).join('')}
-      <div class="gsom"><span>Totaal</span><span>${eur(eigen)}</span></div></div>
-    <div class="actions" style="justify-content:flex-start"><button class="btn" data-act="rekAdd">+ Rekening</button></div>
+    <h2>Eigen geld</h2>
+    <div class="card" style="padding:4px 10px"><div class="grow"><div class="gn">Eigen geld op de bank<small>totaal van alle rekeningen</small></div>
+      <input inputmode="decimal" data-act="eigenBedrag" value="${fnum(eigen)}" aria-label="Eigen geld"></div></div>
 
     <h2>Overwaarde</h2>
     <div class="card" style="padding:4px 10px"><div class="grow"><div class="gn">Overwaarde oude huis<small>beschikbaar vanaf ${owDatum}. Vul het echte bedrag in zodra het bekend is</small></div>
@@ -585,8 +581,6 @@ document.addEventListener('click', async e => {
     closeModal();
   }
   else if(a==='moment'){ const p = get('post',id); save('post',id,{...p,bron:el.dataset.v}); }
-  else if(a==='rekAdd'){ const g = get('geld','bronnen'); save('geld','bronnen',{...g,rekeningen:[...(g.rekeningen||[]),{naam:'Nieuwe rekening',bedrag:0}]}); }
-  else if(a==='rekDel'){ const g = get('geld','bronnen'); if(confirm('Rekening verwijderen?')) save('geld','bronnen',{...g,rekeningen:g.rekeningen.filter((_,i)=>i!=el.dataset.i)}); }
   else if(a==='delPost'){ if(confirm('Uitgavepost verwijderen?')){ remove('post',id); closeModal(); } }
   else if(a==='settings') settings();
   else if(a==='import') importJSON();
@@ -601,7 +595,7 @@ document.addEventListener('change', e => {
   if(a==='upload' && el.files[0]) upload(el.files[0], el.dataset.type);
   else if(a==='filterKamer'){ filt.kamer = el.value; render(); }
   else if(a==='postBedrag'){ const p = get('post',el.dataset.id), n = num(el.value)||0; save('post',p.id, p.werkelijk!=null ? {...p,werkelijk:n} : {...p,begroot:n}); }
-  else if(a==='rekNaam' || a==='rekBedrag'){ const g = get('geld','bronnen'), rk = [...g.rekeningen]; rk[el.dataset.i] = {...rk[el.dataset.i], ...(a==='rekNaam' ? {naam:el.value.trim()||'Rekening'} : {bedrag:num(el.value)||0})}; save('geld','bronnen',{...g,rekeningen:rk}); }
+  else if(a==='eigenBedrag'){ const g = get('geld','bronnen'); save('geld','bronnen',{...g,eigen:num(el.value)||0}); }
   else if(a==='owBedrag'){ const g = get('geld','bronnen'); save('geld','bronnen',{...g,overwaarde:num(el.value)||0}); }
   else if(a==='kamerNaam' && el.value.trim()){ const k = get('kamer',el.dataset.id); save('kamer',k.id,{...k,naam:el.value.trim()}); }
   else if(a==='kamerNotitie'){ const k = get('kamer',el.dataset.id); save('kamer',k.id,{...k,notitie:el.value}); }
