@@ -82,6 +82,25 @@ td{padding:9px 8px;border-top:1px solid var(--line);text-align:right;font-varian
 th:first-child,td:first-child{text-align:left}
 tr.clk{cursor:pointer}
 .neg{color:var(--bad);font-weight:600}.pos{color:var(--ok)}
+.geld{--navy:#00007D;--teal:#00A5AA;--rood:#E2231A}
+.gblok{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.gblok>div{border-radius:14px;padding:14px;color:#fff;box-shadow:var(--shadow)}
+.gblok .n{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}.gblok .l{font-size:13px;opacity:.9}
+.gblok .eig{background:var(--navy)}.gblok .ow{background:var(--teal)}.gblok .tot{grid-column:1/-1;background:var(--card);color:var(--ink);border:2px solid var(--navy)}
+.gblok .min{background:var(--rood)!important;color:#fff!important;border-color:var(--rood)!important}
+.galert{background:var(--rood);color:#fff;border-radius:12px;padding:12px;font-size:14px;margin-top:12px}
+.grow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 4px;border-top:1px solid var(--line)}
+.grow:first-child{border-top:0}
+.grow .gn{flex:1 1 140px;min-width:0;cursor:pointer}.grow .gn small{display:block;color:var(--mut);font-size:12px}
+.grow input{width:110px;text-align:right;font-variant-numeric:tabular-nums;padding:7px 9px}
+.grow input.nm{flex:1 1 120px;text-align:left;width:auto}
+.seg{display:inline-flex;border:1.5px solid var(--navy);border-radius:20px;overflow:hidden;flex:none}
+.seg button{border:0;background:none;color:var(--ink);font-size:12px;padding:6px 10px;cursor:pointer;white-space:nowrap}
+.seg button.on.voor{background:var(--navy);color:#fff}.seg button.on.na{background:var(--teal);color:#fff}
+.gsom{display:flex;justify-content:space-between;font-weight:700;padding:10px 4px 2px;border-top:2px solid var(--line)}
+.xbtn{border:0;background:none;color:var(--mut);font-size:16px;cursor:pointer;padding:4px 6px}
+details summary{cursor:pointer;color:var(--mut);font-size:14px;padding:6px 0}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .gblok .tot{border-color:var(--teal)} :root:not([data-theme=light]) .seg{border-color:var(--teal)}}
 .alert{background:#fff0d6;color:#8a5200;border-radius:12px;padding:12px;font-size:14px;margin-top:12px}
 @media (prefers-color-scheme:dark){.alert{background:#4a3a14;color:#f3c777}}
 .tl{overflow-x:auto;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:10px 0 10px 0}
@@ -143,7 +162,8 @@ const eur = n => (n==null||n==='') ? '–' : new Intl.NumberFormat('nl-NL',{styl
 const num = v => { if(v===''||v==null) return null; const n = parseFloat(String(v).replace(/\./g,'').replace(',','.')); return isNaN(n) ? null : n; };
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 const WIE = {aannemer:'Aannemer', joeri:'Joeri', paulien:'Paulien', samen:'Samen', meiden:'Meiden'};
-const BRON = {bouwdepot:'bouwdepot',overwaarde:'overwaarde',eigen:'eigen geld'};
+const BRON = {bouwdepot:'bouwdepot (telt niet mee)',overwaarde:'na 30 nov · overwaarde',eigen:'vóór 30 nov · eigen geld'};
+const fnum = n => n==null||n==='' ? '' : new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2}).format(n);
 const STATUS = {todo:'Te doen', bezig:'Bezig', wacht:'Wacht op…', klaar:'Klaar'};
 
 /* ================= Data-opslag (lokaal + Supabase) ================= */
@@ -191,7 +211,7 @@ async function loadRemote(){
     for(const k in remote) if(!pending[k]) S.items[k] = {soort:remote[k].soort, id:remote[k].id, data:remote[k].data, bijgewerkt:remote[k].bijgewerkt};
     for(const k in S.items) if(!remote[k] && !pending[k]) delete S.items[k];
   }
-  hernoemKamers();
+  hernoemKamers(); migreerGeld();
   persist(); await flush(); render();
 }
 const KAMERNAMEN = {bg_kamer2:['Kamer (straat)','Garage'], v1_slk1:['Slaapkamer 1','Logeer- / meditatiekamer'], v1_slk2:['Slaapkamer 2','Inloopkast'], v1_slk3:['Slaapkamer 3','Slaapkamer Liz'], v1_slk4:['Slaapkamer 4','Slaapkamer Paulien & Joeri'], v2_slk5:['Slaapkamer 5','Slaapkamer Charli']};
@@ -200,6 +220,19 @@ function hernoemKamers(){
     const i = S.items[K('kamer',id)];
     if(i && i.data.naam === oud){ i.data = {...i.data, naam:nieuw}; i.bijgewerkt = new Date().toISOString(); pending[K('kamer',id)] = 1; }
   }
+}
+function migreerGeld(){
+  if(S.items[K('instelling','geld_v1')]) return;
+  const nu = new Date().toISOString(), zet = (soort,id,data) => { S.items[K(soort,id)] = {soort,id,data,bijgewerkt:nu}; pending[K(soort,id)] = 1; };
+  const pas = (id,d) => { const i = S.items[K('post',id)]; if(i) zet('post',id,{...i.data,...d}); };
+  pas('p_dakkapel',{betaald:true,werkelijk:6750});
+  pas('p_eerste',{betaald:true,werkelijk:2300});
+  pas('p_badkamer',{betaald:true,werkelijk:13117.93});
+  pas('p_plaats',{bron:'eigen'});
+  if(!S.items[K('post','p_dubbel')]) zet('post','p_dubbel',{naam:'Dubbele lasten',begroot:4728,datum:'2026-11-30',bron:'eigen',groep:'Wonen',werkelijk:null,betaald:false});
+  if(!S.items[K('geld','bronnen')]) zet('geld','bronnen',{overwaarde:35000,overwaardeDatum:'2026-11-30',
+    rekeningen:[2463,640,10380,380,1990,10650,650,114].map((bedrag,i) => ({naam:'Rekening '+(i+1), bedrag}))});
+  zet('instelling','geld_v1',{op:nu});
 }
 function subscribe(){
   if(rt) return;
@@ -254,6 +287,7 @@ function seed(){
   t('t_pj',{titel:'Slaapkamer P&J',kamer:'v1_slk4',start:'2026-10-15',deadline:'2026-11-20',post:'p_pj',notitie:'Voorzijde, rechts (gezien vanaf de voordeur).'});
   t('t_vloer',{titel:'Vloertje werkkamer',start:'2026-10-15',deadline:'2026-11-20',kamer:'bg_kamer1',post:'p_vloer',notitie:'Beneden links achter, tegen de tuin aan.'});
   t('t_verhuis',{titel:'Verhuizing regelen (bus/verhuizers, hulp)',wie:'samen',deadline:'2026-11-07',voorstel:true});
+  migreerGeld();
   t('t_tuin',{titel:'Tuin aanpakken',deadline:'2027-03-01',post:'p_tuin',notitie:'Na de verhuizing.'});
   persist();
 }
@@ -397,28 +431,53 @@ function vPlanning(){
 
 function vBudget(){
   const posten = list('post').sort((a,b)=>(a.datum||'').localeCompare(b.datum||'')), ts = taken();
-  const verbouw = posten.filter(p => p.groep !== 'Overig (geen verbouw)' && p.groep !== 'Buffer');
-  const begroot = verbouw.reduce((s,p)=>s+(p.begroot||0),0), uit = verbouw.reduce((s,p)=>s+(p.werkelijk||0),0);
-  const resterend = verbouw.reduce((s,p)=>s+Math.max(p.begroot||0, p.werkelijk||0) - (p.werkelijk||0),0);
-  const buffer = posten.find(p=>p.groep==='Buffer'), bufferNu = buffer ? buffer.begroot||0 : 0, advies = Math.round(begroot*.1/100)*100;
-  const depot = verbouw.filter(p=>p.bron==='bouwdepot').reduce((s,p)=>s+(p.begroot||0),0);
-  const over = verbouw.filter(p=>p.bron==='overwaarde').reduce((s,p)=>s+(p.begroot||0),0);
+  const g = get('geld','bronnen') || {rekeningen:[],overwaarde:0,overwaardeDatum:'2026-11-30'};
+  const bedrag = p => p.werkelijk ?? p.begroot ?? 0;
+  const telt = p => !p.betaald && p.bron !== 'bouwdepot' && p.groep !== 'Overig (geen verbouw)' && p.groep !== 'Buffer';
+  const open = posten.filter(telt), betaald = posten.filter(p => p.betaald), overig = posten.filter(p => !p.betaald && !telt(p));
+  const eigen = (g.rekeningen||[]).reduce((s,r)=>s+(r.bedrag||0),0), ow = g.overwaarde||0;
+  const voor = open.filter(p => p.bron !== 'overwaarde').reduce((s,p)=>s+bedrag(p),0);
+  const na = open.filter(p => p.bron === 'overwaarde').reduce((s,p)=>s+bedrag(p),0);
+  const eigenOver = eigen - voor, owOver = ow - na, totOver = eigenOver + owOver;
   const geschat = pid => ts.filter(t => t.post === pid).reduce((s,t)=>s+(t.schatting||0),0);
-  const zonderPost = ts.filter(t => !t.post && t.schatting);
-  const row = p => { const g = geschat(p.id), verschil = p.werkelijk!=null ? (p.begroot||0)-p.werkelijk : null;
-    return `<tr class="clk" data-act="editPost" data-id="${p.id}"><td>${p.betaald?'✓ ':''}${esc(p.naam)}<div class="muted">${fd(p.datum)} · ${BRON[p.bron]||''}</div></td><td>${eur(p.begroot)}</td><td>${g?eur(g):'–'}</td><td>${eur(p.werkelijk)}</td><td class="${verschil<0?'neg':verschil>0?'pos':''}">${verschil==null?'–':eur(verschil)}</td></tr>`; };
-  return `<div class="stats" style="margin-top:0">
-    <div class="stat"><div class="n">${eur(begroot)}</div><div class="l">begroot (verbouw)</div></div>
-    <div class="stat"><div class="n">${eur(uit)}</div><div class="l">uitgegeven</div></div>
-    <div class="stat"><div class="n">${eur(resterend)}</div><div class="l">nog te betalen</div></div>
-    <div class="stat"><div class="n">${eur(depot)}</div><div class="l">bouwdepot</div></div>
-    <div class="stat"><div class="n">${eur(over)}</div><div class="l">overwaarde</div></div>
-    <div class="stat"><div class="n">${eur(begroot-depot-over)}</div><div class="l">eigen geld</div></div></div>
-    ${bufferNu < advies ? `<div class="alert"><b>Geen of te weinig buffer.</b> Onvoorzien staat op ${eur(bufferNu)}. Bij een verbouwing in een huis uit 1977 reken je gemakkelijk op 10% extra (≈ ${eur(advies)}). Tik op "Onvoorzien" om dit aan te passen.</div>`:''}
-    <h2>Uitgaven</h2><div class="card" style="padding:4px 6px;overflow-x:auto"><table><tr><th>Post</th><th>Begroot</th><th>Via taken</th><th>Werkelijk</th><th>Over</th></tr>${posten.map(row).join('')}
-    ${zonderPost.length?`<tr><td>Taken zonder post</td><td>–</td><td>${eur(zonderPost.reduce((s,t)=>s+t.schatting,0))}</td><td></td><td></td></tr>`:''}</table></div>
-    <p class="muted">"Via taken" is de som van de schattingen die je per taak invult. "Werkelijk" vul je in zodra een factuur binnen is. Alleen uitgaven worden bijgehouden.</p>
-    <div class="actions" style="justify-content:flex-start"><button class="btn" data-act="newPost">+ Nieuwe uitgavepost</button></div>`;
+  const zonderPost = ts.filter(t => !t.post && t.schatting && isOpen(t)).reduce((s,t)=>s+t.schatting,0);
+  const owDatum = fd(g.overwaardeDatum||'2026-11-30');
+  const rij = p => `<div class="grow"><div class="gn" data-act="editPost" data-id="${p.id}">${esc(p.naam)}<small>${p.bron==='overwaarde'?'uit overwaarde':'uit eigen geld'}${geschat(p.id)?` · taken ${eur(geschat(p.id))}`:''}</small></div>
+      <input inputmode="decimal" data-act="postBedrag" data-id="${p.id}" value="${fnum(bedrag(p))}" aria-label="Bedrag ${esc(p.naam)}">
+      <span class="seg"><button class="voor ${p.bron!=='overwaarde'?'on':''}" data-act="moment" data-id="${p.id}" data-v="eigen">Vóór 30 nov</button><button class="na ${p.bron==='overwaarde'?'on':''}" data-act="moment" data-id="${p.id}" data-v="overwaarde">Na 30 nov</button></span></div>`;
+  return `<div class="geld">
+    <div class="gblok">
+      <div class="eig ${eigenOver<0?'min':''}"><div class="l">Eigen geld over</div><div class="n">${eur(eigenOver)}</div><div class="l">${eur(eigen)} − ${eur(voor)}</div></div>
+      <div class="ow ${owOver<0?'min':''}"><div class="l">Overwaarde over</div><div class="n">${eur(owOver)}</div><div class="l">${eur(ow)} − ${eur(na)}</div></div>
+      <div class="tot ${totOver<0?'min':''}"><div class="l">Totaal over</div><div class="n">${eur(totOver)}</div><div class="l">na alle uitgaven hieronder</div></div></div>
+    ${eigenOver<0?`<div class="galert"><b>Eigen geld schiet tekort:</b> ${eur(-eigenOver)} te weinig vóór 30 nov. Zet uitgaven op "Na 30 nov" of schuif ze op.</div>`:''}
+    ${owOver<0?`<div class="galert"><b>Overwaarde schiet tekort:</b> ${eur(-owOver)} meer uitgaven dan overwaarde.</div>`:''}
+
+    <h2>Uitgaven nog te betalen<small>${eur(voor+na)}</small></h2>
+    <div class="card" style="padding:4px 10px">${open.map(rij).join('') || '<div class="empty">Alles betaald 🎉</div>'}
+      <div class="gsom"><span>Vóór 30 nov ${eur(voor)}</span><span>Na 30 nov ${eur(na)}</span></div></div>
+    <div class="actions" style="justify-content:flex-start"><button class="btn" data-act="newPost">+ Nieuwe uitgave</button></div>
+    ${zonderPost ? `<div class="alert"><b>Let op: ${eur(zonderPost)} aan kostenschattingen in taken</b> hoort nog bij geen enkele uitgave (bijv. vloeren, schuifpui, voordeur) en telt hierboven niet mee. Maak er een uitgave van zodra je besluit het te doen.</div>`:''}
+
+    <h2>Eigen geld<small>${eur(eigen)}</small></h2>
+    <div class="card" style="padding:4px 10px">${(g.rekeningen||[]).map((r,i) => `<div class="grow">
+        <input class="nm" data-act="rekNaam" data-i="${i}" value="${esc(r.naam)}" aria-label="Naam rekening">
+        <input inputmode="decimal" data-act="rekBedrag" data-i="${i}" value="${fnum(r.bedrag)}" aria-label="Saldo ${esc(r.naam)}">
+        <button class="xbtn" data-act="rekDel" data-i="${i}" aria-label="Rekening verwijderen">✕</button></div>`).join('')}
+      <div class="gsom"><span>Totaal</span><span>${eur(eigen)}</span></div></div>
+    <div class="actions" style="justify-content:flex-start"><button class="btn" data-act="rekAdd">+ Rekening</button></div>
+
+    <h2>Overwaarde</h2>
+    <div class="card" style="padding:4px 10px"><div class="grow"><div class="gn">Overwaarde oude huis<small>beschikbaar vanaf ${owDatum}. Vul het echte bedrag in zodra het bekend is</small></div>
+      <input inputmode="decimal" data-act="owBedrag" value="${fnum(ow)}" aria-label="Overwaarde"></div></div>
+
+    <h2>Niet meegeteld</h2>
+    <details><summary>Al betaald (${betaald.length}) · ${eur(betaald.reduce((s,p)=>s+bedrag(p),0))}</summary>
+      <div class="card" style="padding:4px 10px">${betaald.map(p=>`<div class="grow"><div class="gn" data-act="editPost" data-id="${p.id}">✓ ${esc(p.naam)}<small>${BRON[p.bron]||''}</small></div><span>${eur(bedrag(p))}</span></div>`).join('')}</div></details>
+    ${overig.length?`<details><summary>Bouwdepot, buffer en overig (${overig.length})</summary>
+      <div class="card" style="padding:4px 10px">${overig.map(p=>`<div class="grow"><div class="gn" data-act="editPost" data-id="${p.id}">${esc(p.naam)}<small>${esc(p.groep||'')} · ${BRON[p.bron]||''}</small></div><span>${eur(bedrag(p))}</span></div>`).join('')}</div></details>`:''}
+    <p class="muted">Bedragen pas je direct aan in de velden. Tik op een naam voor meer opties (betaald, datum, verwijderen). Wijzigingen zijn meteen zichtbaar voor Paulien.</p>
+  </div>`;
 }
 
 /* ================= Foto's ================= */
@@ -469,7 +528,7 @@ function postForm(id){
   modal(`<h3>${id?'Uitgavepost':'Nieuwe uitgavepost'}</h3>
     <label>Naam</label><input id="p_naam" value="${esc(p.naam)}">
     <div class="two"><div><label>Begroot (€)</label><input id="p_begroot" inputmode="decimal" value="${p.begroot??''}"></div><div><label>Werkelijk (€)</label><input id="p_werkelijk" inputmode="decimal" value="${p.werkelijk??''}" placeholder="Zodra bekend"></div></div>
-    <div class="two"><div><label>Verwachte datum</label><input id="p_datum" type="date" value="${p.datum||''}"></div><div><label>Betaald uit</label><select id="p_bron">${opts({eigen:'Eigen geld',bouwdepot:'Bouwdepot',overwaarde:'Overwaarde'},p.bron)}</select></div></div>
+    <div class="two"><div><label>Verwachte datum</label><input id="p_datum" type="date" value="${p.datum||''}"></div><div><label>Betaald uit</label><select id="p_bron">${opts({eigen:'Eigen geld (vóór 30 nov)',overwaarde:'Overwaarde (na 30 nov)',bouwdepot:'Bouwdepot (telt niet mee)'},p.bron)}</select></div></div>
     <label><input type="checkbox" id="p_betaald" style="width:auto" ${p.betaald?'checked':''}> Betaald</label>
     <div class="actions"><button class="btn del" data-act="delPost" data-id="${id||''}" ${id?'':'style="visibility:hidden"'}>Verwijderen</button><span style="flex:1"></span><button class="btn" data-act="close">Annuleren</button><button class="btn pri" data-act="savePost" data-id="${id||''}">Opslaan</button></div>`);
 }
@@ -525,6 +584,9 @@ document.addEventListener('click', async e => {
     save('post', id||uid(), {...old, naam:val('p_naam').trim(), begroot:num(val('p_begroot'))||0, werkelijk:num(val('p_werkelijk')), datum:val('p_datum'), bron:val('p_bron'), betaald:document.getElementById('p_betaald').checked});
     closeModal();
   }
+  else if(a==='moment'){ const p = get('post',id); save('post',id,{...p,bron:el.dataset.v}); }
+  else if(a==='rekAdd'){ const g = get('geld','bronnen'); save('geld','bronnen',{...g,rekeningen:[...(g.rekeningen||[]),{naam:'Nieuwe rekening',bedrag:0}]}); }
+  else if(a==='rekDel'){ const g = get('geld','bronnen'); if(confirm('Rekening verwijderen?')) save('geld','bronnen',{...g,rekeningen:g.rekeningen.filter((_,i)=>i!=el.dataset.i)}); }
   else if(a==='delPost'){ if(confirm('Uitgavepost verwijderen?')){ remove('post',id); closeModal(); } }
   else if(a==='settings') settings();
   else if(a==='import') importJSON();
@@ -538,6 +600,9 @@ document.addEventListener('change', e => {
   const el = e.target, a = el.dataset.act;
   if(a==='upload' && el.files[0]) upload(el.files[0], el.dataset.type);
   else if(a==='filterKamer'){ filt.kamer = el.value; render(); }
+  else if(a==='postBedrag'){ const p = get('post',el.dataset.id), n = num(el.value)||0; save('post',p.id, p.werkelijk!=null ? {...p,werkelijk:n} : {...p,begroot:n}); }
+  else if(a==='rekNaam' || a==='rekBedrag'){ const g = get('geld','bronnen'), rk = [...g.rekeningen]; rk[el.dataset.i] = {...rk[el.dataset.i], ...(a==='rekNaam' ? {naam:el.value.trim()||'Rekening'} : {bedrag:num(el.value)||0})}; save('geld','bronnen',{...g,rekeningen:rk}); }
+  else if(a==='owBedrag'){ const g = get('geld','bronnen'); save('geld','bronnen',{...g,overwaarde:num(el.value)||0}); }
   else if(a==='kamerNaam' && el.value.trim()){ const k = get('kamer',el.dataset.id); save('kamer',k.id,{...k,naam:el.value.trim()}); }
   else if(a==='kamerNotitie'){ const k = get('kamer',el.dataset.id); save('kamer',k.id,{...k,notitie:el.value}); }
 });
@@ -561,12 +626,12 @@ function showLogin(msg=''){
   };
   $('#l_in').onclick = () => go(false); $('#l_new').onclick = () => go(true);
   $('#l_pw').onkeydown = e => { if(e.key==='Enter') go(false); };
-  $('#l_local').onclick = e => { e.preventDefault(); localOnly = true; if(!Object.keys(S.items).length) { seed(); } document.querySelector('nav').style.display = ''; setSync('Lokaal'); render(); };
+  $('#l_local').onclick = e => { e.preventDefault(); localOnly = true; if(!Object.keys(S.items).length) { seed(); } migreerGeld(); persist(); document.querySelector('nav').style.display = ''; setSync('Lokaal'); render(); };
 }
 async function start(session){
   user = session.user; document.querySelector('nav').style.display = ''; setSync('Laden…');
   try{ await loadRemote(); subscribe(); setSync('✓ Gesynchroniseerd'); }
-  catch(e){ console.warn(e); setSync('⚠ Offline'); if(!Object.keys(S.items).length) seed(); render(); }
+  catch(e){ console.warn(e); setSync('⚠ Offline'); if(!Object.keys(S.items).length) seed(); migreerGeld(); persist(); render(); }
 }
 document.addEventListener('visibilitychange', () => { if(!document.hidden && user && sb) loadRemote().catch(()=>{}); });
 window.addEventListener('online', () => { if(user) flush(); });
